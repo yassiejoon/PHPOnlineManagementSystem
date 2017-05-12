@@ -6,9 +6,9 @@ session_start();
 require_once 'vendor/autoload.php';
 
 //DB::$host = '127.0.0.1';
-DB::$user = 'slimtodo';
-DB::$password = 'EaOvdIy5OJkZhtGN';
-DB::$dbName = 'slimtodo';
+DB::$user = 'OnlineFileManagement';
+DB::$password = 'iGdcbYwAqcJAzWCu';
+DB::$dbName = 'OnlineFileManagement';
 DB::$port = 3333;
 DB::$encoding = 'utf8';
 
