@@ -1,0 +1,30 @@
+Date: May 12th, 2017 ----  The first day of scrum.
+
+Yas
+What did I do/ did not do since last scrum:
+We just started the project today.
+Wrote the Project Proposal.
+
+
+What will be done until the next scrum:
+I will do the login and register URLs
+
+
+Where do I need help / what do I need research.
+research on password reset and upload files.
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+We just started the project today.
+Wrote the design and database parts of proposal.
+
+
+What will be done until the next scrum:
+password reset and upload URLs
+
+
+Where do I need help / what do I need research.
+research on password reset and upload files.
+
