@@ -1,0 +1,34 @@
+
+Date: May 15th, 2017 
+
+Yas
+What did I do since last scrum:
+login , register, main_page URLs
+started coding style.css  
+
+
+
+What will be done until the next scrum:
+incorporate upload URL to the application
+finish main_page style
+
+
+
+Where do I need help / what do I need research.
+research on upload/download
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+upload and list URL
+Wrote the database parts of proposal.
+
+
+What will be done until the next scrum:
+rename and delete
+
+
+Where do I need help / what do I need research.
+research on download
+
