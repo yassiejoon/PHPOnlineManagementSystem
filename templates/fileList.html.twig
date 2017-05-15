@@ -1,0 +1,24 @@
+
+{% extends "master.html.twig" %}
+
+{% block title %} File List {% endblock %}
+
+{% block content %}
+    
+    <table border="1">
+        <tr><th>File Id</th><th>User Id</th><th>File Name</th><th>Modified Date</th><th>Size(KB)</th><th>Operations</th></tr>
+        {% for f in fileList %}
+            <tr>
+                <td>{{f.id}}</td>
+                <td>{{f.userId}}</td>
+                <td>{{f.filename}}</td>
+                <td>{{f.modifiedDate}}</td>
+                <td>{{f.size}}</td>
+                <td><a href="/rename/{{f.id}}">rename</a>
+                    <a href="/delete/{{f.id}}">delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}{# empty Twig template #}

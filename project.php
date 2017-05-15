@@ -6,10 +6,10 @@ session_start();
 require_once 'vendor/autoload.php';
 
 //DB::$host = '127.0.0.1';
-DB::$user = 'OnlineFileManagement';
-DB::$password = 'iGdcbYwAqcJAzWCu';
-DB::$dbName = 'OnlineFileManagement';
-DB::$port = 3333;
+DB::$user = 'onlinefilemanagement';
+DB::$password = 'AzQ9NZkZ9IepAhWY';
+DB::$dbName = 'onlinefilemanagement';
+DB::$port = 3306;
 DB::$encoding = 'utf8';
 
 
@@ -33,19 +33,9 @@ if (!isset($_SESSION['todouser'])) {
 $twig = $app->view()->getEnvironment();
 $twig->addGlobal('todouser', $_SESSION['todouser']);
 
-/*
-$app->get('/', function() use ($app) {
-    if (!$_SESSION['todouser']) {
-        $app->render('index_please_login.html.twig');
-        return;
-    }
-    $userId = $_SESSION['todouser']['id'];
-    $todoList = DB::query("SELECT * FROM todos WHERE ownerId=%i", $userId);
-    print_r($todoList);
-    //$app->render('index_todolist.html.twig');
-});
 
-// STATE 1: First show
+// Login, Logout, and Register
+// Register
 $app->get('/register', function() use ($app) {
     $app->render('register.html.twig');
 });
@@ -56,8 +46,14 @@ $app->post('/register', function() use ($app) {
     $email = $app->request()->post('email');
     $pass1 = $app->request()->post('pass1');
     $pass2 = $app->request()->post('pass2');
+    $name = $app->request()->post('name');
     // list of values to retain after a failed submission
-    $valueList = array('email' => $email);
+    $valueList = array(
+        'email' => $email,
+        'password' => $pass1,
+        'name' => $name,
+        'isAdmin' => 'no'
+    );
     // check for errors and collect error messages
     $errorList = array();
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
@@ -73,10 +69,8 @@ $app->post('/register', function() use ($app) {
     } else {
         if (strlen($pass1) < 6) {
             array_push($errorList, "Password too short, must be 6 characters or longer");
-        } 
-        if (preg_match('/[A-Z]/', $pass1) != 1
-         || preg_match('/[a-z]/', $pass1) != 1
-         || preg_match('/[0-9]/', $pass1) != 1) {
+        }
+        if (preg_match('/[A-Z]/', $pass1) != 1 || preg_match('/[a-z]/', $pass1) != 1 || preg_match('/[0-9]/', $pass1) != 1) {
             array_push($errorList, "Password must contain at least one lowercase, "
                     . "one uppercase letter, and a digit");
         }
@@ -88,10 +82,7 @@ $app->post('/register', function() use ($app) {
             'v' => $valueList
         ));
     } else {
-        DB::insert('users', array(
-            'email' => $email,
-            'password' => $pass1
-        ));
+        DB::insert('users', $valueList);
         $app->render('register_success.html.twig');
     }
 });
@@ -100,10 +91,11 @@ $app->post('/register', function() use ($app) {
 $app->get('/ajax/emailused/:email', function($email) {
     $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
     //echo json_encode($user, JSON_PRETTY_PRINT);
-    echo json_encode($user != null);    
+    echo json_encode($user != null);
 });
 
-// HOMEWORK 1: implement login form
+
+// Login
 $app->get('/login', function() use ($app) {
     $app->render('login.html.twig');
 });
@@ -132,36 +124,205 @@ $app->post('/login', function() use ($app) {
     }
 });
 
-
-$app->get('/add', function() use ($app) {
-    if (!$_SESSION['todouser']) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-    $isDone = $app->request()->post('isDone') ? 'done' : 'pending';
-    $valueList = array('task' => $task, 'dueDate' => $dueDate,
-        'isDone' => $isDone);
-    
-    $app->render('add.html.twig');
-});
-
-$app->post('/add', function() use ($app) {
-    if (!$_SESSION['todouser']) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-    print_r($_POST);
-    $isDone = $app->request()->post('isDone');
-    if ($isDone) {
-        echo "yes it is!";
-    }
-    echo "<p>isDone: $isDone</p>";
-});
-
-
+//Logout
 $app->get('/logout', function() use ($app) {
     unset($_SESSION['todouser']);
     $app->render('logout.html.twig');
+});
+
+//User action: upload, list, rename, download and delete
+//Upload
+$app->get('/upload', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('upload.html.twig');
+});
+
+$app->post('/upload', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $errorList = array();
+    $filename = isset($_FILES['filename']) ? $_FILES['filename'] : array();
+
+    //
+    if (!$filename) {
+        array_push($errorList, "File is required to upload.");
+    }
+    //
+    if ($errorList) {
+        $app->render("upload.html.twig", array(
+            "errorList" => $errorList
+        ));
+    } else {
+
+        $filePath = "uploads/" . $filename["name"];
+        move_uploaded_file($filename["name"], $filePath);
+        DB::insert('files', array(
+            "userId" => $_SESSION['todouser']['id'],
+            "filename" => $filename["name"],
+            "modifiedDate" => date('Y-m-d H:i:s'),
+            "size" => $_FILES["filename"]["size"] / 1024
+        ));
+        $app->render("upload_success.html.twig", array(
+            "filePath" => $filePath
+        ));
+    }
+});
+
+//List
+$app->get('/list', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('index_please_login.html.twig');
+        return;
+    }
+    $userId = $_SESSION['todouser']['id'];
+    $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
+    $app->render('filelist.html.twig', array('fileList' => $fileList));
+});
+
+//Rename
+$app->get('/rename/:id', function($fileId) use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%s", $fileId);
+    $errorList = array();
+    if (!$file) {
+        array_push($errorList, "File is not selected.");
+        $app->render('rename.html.twig', $errorList);
+    }
+    $app->render('rename.html.twig', array(
+        'f' => $file
+    ));
+});
+
+$app->post('/rename/:id', function($fileId) use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    
+    $filename = $app->request()->post('filename');
+    $fileList = array(
+        "filename" => $filename,
+        "modifiedDate" => date('Y-m-d H:i:s'));
+    
+    DB::update('files', $fileList, "id = %s", $fileId);
+    $app->render("rename_success.html.twig");
+});
+
+//Delete
+$app->get('/delete/:id', function($fileId) use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%s", $fileId);
+    $errorList = array();
+    if (!$file) {
+        array_push($errorList, "File is not selected.");
+        $app->render('delete.html.twig', $errorList);
+    }
+    $app->render('delete.html.twig', array(
+        'f' => $file
+    ));
+});
+
+
+$app->post('/delete/:id', function($fileId) use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    DB::delete('files', "id = %s", $fileId);
+    $app->render("delete_success.html.twig");
+});
+
+//Download
+$app->get('/download', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('rename.html.twig');
+});
+
+$app->post('/download', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+});
+
+//Admin action: list, edit, delete, and block
+//List
+$app->get('/admin/list', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('rename.html.twig');
+});
+
+$app->post('/admin/list', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+});
+
+//Edit
+$app->get('/admin/edit', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('rename.html.twig');
+});
+
+$app->post('/admin/edit', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+});
+
+//Delete
+$app->get('/admin/delete', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('rename.html.twig');
+});
+
+$app->post('/admin/delete', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+});
+
+//Block
+$app->get('/admin/block', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $app->render('rename.html.twig');
+});
+
+$app->post('/admin/block', function() use ($app) {
+    if (!$_SESSION['todouser']) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
 });
 
 // FOR DIAGNOSTIC PURPOSES ONLY - REMOVE IN PRODUCTION
@@ -169,5 +330,4 @@ $app->get('/session', function() {
     print_r($_SESSION);
 });
 
-*/
 $app->run();
