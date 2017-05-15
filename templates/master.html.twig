@@ -4,23 +4,23 @@
         <link rel="stylesheet" href="/styles.css"/>
         <meta charset="UTF-8">
         <title>{% block title %}{% endblock %}</title>
-    {% block headExtra %}{% endblock %}
-</head>
-<body>
-    <div id="centerContent">
-        <div id="hrader">
-            {% if todouser %}
-                Welcome {{ todouser.name }}, you may <a href="/logout">Logout</a> or <a href="/add">Upload a file</a>
-            {% else %}
-                You may <a href="/login">Login</a> or <a href="/register">Register</a>
-            {% endif %}
-        </div>
-        <div id="content">
+        {% block headExtra %}{% endblock %}
+    </head>
+    <body>
+        <div id="centerContent">
+            <div id="hrader">
+                {% if todouser %}
+                    Welcome {{ todouser.name }}, you may <a href="/logout">Logout</a> or <a href="/add">Upload a file</a>
+                {% else %}
+                    You may <a href="/login">Login</a> or <a href="/register">Register</a>
+                {% endif %}
+            </div>
+            <div id="content">
             {% block content %}{% endblock %}
-        </div>
-        <div id="footer">
+            </div>
+            <div id="footer">
             &copy; Copyright 2017 by <a href="http://domain.invalid/">Wei</a>.
+            </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>

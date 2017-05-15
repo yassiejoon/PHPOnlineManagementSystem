@@ -6,13 +6,16 @@ session_start();
 require_once 'vendor/autoload.php';
 
 //DB::$host = '127.0.0.1';
+/*
 DB::$user = 'onlinefilemanagement';
-DB::$password = 'AzQ9NZkZ9IepAhWY';
+DB::$password = 'a9zvC7CI4mGUmgt0';
 DB::$dbName = 'onlinefilemanagement';
 DB::$port = 3306;
-DB::$encoding = 'utf8';
+DB::$encoding = 'utf8';*/
 
-
+DB::$user = 'cp4776_ofms_wy ';
+DB::$password = 'Jg56AhAeGpmPa0ye';
+DB::$dbName = 'cp4776_ofms';
 
 // Slim creation and setup
 $app = new \Slim\Slim(array(
