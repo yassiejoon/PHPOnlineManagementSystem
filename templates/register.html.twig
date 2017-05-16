@@ -4,49 +4,41 @@
 {% block title %} User registration {% endblock %}
 
 {% block headExtra %}
-    
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("#emailInUse").hide();
-        $("input[name=email]").keyup(function () {
-            var email = $(this).val();
-            //console.log("Keyup: "+ email);
-            if (email === "") {
-                $("#emailInUse").hide();
-                return;
-            }
-            $.get("/ajax/emailused/" + email, function (result) {
-                result = eval(result);
-                if (result) {
-                    $("#emailInUse").show();
-                } else {
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#emailInUse").hide();
+            $("input[name=email]").keyup(function () {
+                var email = $(this).val();
+                //console.log("Keyup: "+ email);
+                if (email === "") {
                     $("#emailInUse").hide();
+                    return;
                 }
+                $.get("/ajax/emailused/" + email, function (result) {
+                    result = eval(result);
+                    if (result) {
+                        $("#emailInUse").show();
+                    } else {
+                        $("#emailInUse").hide();
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 
 {% endblock %}
 
 {% block content %}
-    
-{% if errorList %}
-    <ul class="errorList">
-        {% for error in errorList %}
-            <li> {{ error }} </li>
-            {% endfor %}
-    </ul>
-{% endif %}
 
+    {% if errorList %}
+        <ul class="errorList">
+            {% for error in errorList %}
+                <li> {{ error }} </li>
+                {% endfor %}
+        </ul>
+    {% endif %}
 
-<form method = "post">
-    Name: <input type="text" name="name" value="{{v.name}}"><br>
-    Email: <input type="email" name="email" value="{{v.email}}"><span id="emailInUse">Email already registered</span><br>
-    Password: <input type="password" name="pass1"><br>
-    Password (repeated): <input type="password" name="pass2"><br>
-    <input type="submit" value="Register">
-</form>
     
 {% endblock %}

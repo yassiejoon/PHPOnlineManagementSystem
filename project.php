@@ -4,18 +4,19 @@ session_cache_limiter(false);
 session_start();
 
 require_once 'vendor/autoload.php';
+require_once 'vendor/FlashMessages.php';
 
 //DB::$host = '127.0.0.1';
-/*
+
 DB::$user = 'onlinefilemanagement';
-DB::$password = 'a9zvC7CI4mGUmgt0';
+DB::$password = '3Sd3zRlaytWeEYHa';
 DB::$dbName = 'onlinefilemanagement';
 DB::$port = 3306;
-DB::$encoding = 'utf8';*/
-
+DB::$encoding = 'utf8';
+/*
 DB::$user = 'cp4776_ofms_wy ';
 DB::$password = 'Jg56AhAeGpmPa0ye';
-DB::$dbName = 'cp4776_ofms';
+DB::$dbName = 'cp4776_ofms';*/
 
 // Slim creation and setup
 $app = new \Slim\Slim(array(
@@ -29,6 +30,17 @@ $view->parserOptions = array(
 );
 $view->setTemplatesDirectory(dirname(__FILE__) . '/templates');
 
+$msg = new \Plasticbrain\FlashMessages\FlashMessages();
+/*
+// Add a few messages
+$msg->info('This is an info message');
+$msg->success('This is a success message');
+$msg->warning('This is a warning message');
+$msg->error('This is an error message');
+ 
+// Display the messages
+$msg->display();
+*/
 if (!isset($_SESSION['todouser'])) {
     $_SESSION['todouser'] = array();
 }
@@ -46,10 +58,10 @@ $app->get('/register', function() use ($app) {
 // Receiving a submission
 $app->post('/register', function() use ($app) {
     // extract variables
-    $email = $app->request()->post('email');
+    $email = $app->request()->post('useremail');
     $pass1 = $app->request()->post('pass1');
     $pass2 = $app->request()->post('pass2');
-    $name = $app->request()->post('name');
+    $name = $app->request()->post('username');
     // list of values to retain after a failed submission
     $valueList = array(
         'email' => $email,
@@ -80,10 +92,9 @@ $app->post('/register', function() use ($app) {
     }
     //
     if ($errorList) {
-        $app->render('register.html.twig', array(
-            'errorList' => $errorList,
-            'v' => $valueList
-        ));
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error($errorList);
+        $msg->display();
     } else {
         DB::insert('users', $valueList);
         $app->render('register_success.html.twig');
@@ -119,7 +130,9 @@ $app->post('/login', function() use ($app) {
     }
     // decide what to render
     if ($error) {
-        $app->render('login.html.twig', array("error" => true));
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Login failed try again.');
+        $msg->display();
     } else {
         unset($user['password']);
         $_SESSION['todouser'] = $user;

@@ -80,7 +80,7 @@ a{
 	line-height: 35px;
 	position: relative;
 	color:#FFF;
-    padding: 0px 0px 5px 0px;
+        padding: 0px 0px 5px 0px;
 	font-weight:600;
 }
 .container > header h1 span{
@@ -157,10 +157,11 @@ a{
 }
 
 /* remove codrops styles and reset the whole thing */
-//@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
-body{background:url(http://www.businessnewsdaily.com/images/i/000/007/874/original/free-business-plan-templates.jpg);
-background-attachment:fixed;
-background-size:cover;
+/*@import url('https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');*/
+body{
+    background:url(/documents/background.jpg);
+    background-attachment:fixed;
+    background-size:cover;
 }
 #container_demo{
 	 text-align: left;
@@ -288,7 +289,7 @@ input {
     position: absolute;
     left: 10px;
     top: 35px;
-	width: 30px;
+    width: 30px;
 }
 
 /*styling both submit buttons */
@@ -339,23 +340,6 @@ p.signin.button{
 	margin: 5px 0;
 }
 
-
-/* styling the checkbox "keep me logged in"*/
-.keeplogin{
-	margin-top: -5px;
-}
-.keeplogin input,
-.keeplogin label{
-	display: inline-block;
-	font-size: 12px;	
-	font-style: italic;
-}
-.keeplogin input#loginkeeping{
-	margin-right: 5px;
-}
-.keeplogin label{
-	width: 80%;
-}
 
 
 /*styling the links to change from one form to another */
@@ -456,9 +440,9 @@ p.change_link{
 }
 #toregister:target ~ #wrapper #register,
 #tologin:target ~ #wrapper #login{
-	-webkit-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
--moz-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
+        -webkit-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
+        -moz-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
+        box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.36);
 	z-index: 22;
 	-webkit-animation-name: fadeInLeft;
 	-moz-animation-name: fadeInLeft;
