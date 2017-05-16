@@ -1,6 +1,7 @@
 
 body {
-    background: url(../img/background.jpg);
+    background: url(../img/bg2.jpeg) center;
+    background-size: 100% auto; 
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-weight: 300;

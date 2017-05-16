@@ -1,12 +1,44 @@
-{% extends "master.html.twig" %}
+{% extends "page.html.twig" %}
 
 {% block title %}Login successful{% endblock %}
 
 {% block content %}
-    
-<p>You've logged in succesfully.
-    <a href="/">Click to continue to the website</a>
-</p>
+    <div class="top-content">
+
+        <div class="inner-bg">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 text">
+                        <h1>Login Successful</h1>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 text">
+
+                        <div class="form-box">
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>You can</h3>
+                                    <a href="logout">Logout</a>
+                                    <a href="mainpage">Main Page</a>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-key"></i>
+                                </div>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
 
 {% endblock content %}
 

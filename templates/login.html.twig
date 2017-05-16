@@ -1,96 +1,69 @@
 {# empty Twig template #}
 {% extends "page.html.twig" %}
 
-{% block title %} User Login and Registration {% endblock %}
-
-{% block headExtra %}
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#emailInUse").hide();
-            $("input[name=email]").keyup(function () {
-                var email = $(this).val();
-                //console.log("Keyup: "+ email);
-                if (email === "") {
-                    $("#emailInUse").hide();
-                    return;
-                }
-                $.get("/ajax/emailused/" + email, function (result) {
-                    result = eval(result);
-                    if (result) {
-                        $("#emailInUse").show();
-                    } else {
-                        $("#emailInUse").hide();
-                    }
-                });
-            });
-        });
-    </script>
-
-{% endblock %}
+{% block title %} User Login {% endblock %}
 
 {% block content %}
-    <header>
-        <h1>Login and Registration Form</h1>
-    </header>
-    <section>				
-        <div id="container_demo" >
-            <!-- hidden anchor to stop jump http://www.css3create.com/Astuce-Empecher-le-scroll-avec-l-utilisation-de-target#wrap4  -->
-            <a class="hiddenanchor" id="toregister"></a>
-            <a class="hiddenanchor" id="tologin"></a>
-            <div id="wrapper">
-                <div id="login" class="animate form">
-                    <form  method="post"> 
-                        <h1>Log in</h1> 
-                        <p> 
-                            <label for="username" class="uname" > Your email </label>
-                            <input id="username" type="email" name="email" required="required" placeholder="mymail@mail.com"/>
-                        </p>
-                        <p> 
-                            <label for="password" class="youpasswd"> Your password </label>
-                            <input id="password" type="password" name="pass" required="required" placeholder="eg. X8df90EO" /> 
-                        </p>
-                        <p class="login button"> 
-                            <input type="submit" value="Login"/> 
-                            <a href="login_success.html.twig" target="_blank" ></a>
-                        </p>
-                        <p class="change_link">
-                            Not a member yet ?
-                            <a href="#toregister" class="to_register">Join us</a>
-                        </p>
-                    </form>
+
+    {% if error %}
+        <p class="errorList">Login failed try again.</p>
+    {% endif %}
+
+    <!-- Top content -->
+    <div class="top-content">
+
+        <div class="inner-bg">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 text">
+                        <h1>Login Form</h1>
+
+                    </div>
                 </div>
 
-                <div id="register" class="animate form">
-                    <form  method="post"> 
-                        <h1> Sign up </h1> 
-                        <p> 
-                            <label for="usernamesignup" class="uname" >Your username</label>
-                            <input id="usernamesignup" name="username" required="required" type="text" placeholder="mysuperusername690" />
-                        </p>
-                        <p> 
-                            <label for="emailsignup" class="youmail"  > Your email</label>
-                            <input id="emailsignup" name="useremail" required="required" type="email" placeholder="mysupermail@mail.com"/> 
-                        </p>
-                        <p> 
-                            <label for="passwordsignup" class="youpasswd" >Your password </label>
-                            <input id="passwordsignup" name="pass1" required="required" type="password" placeholder="eg. X8df!90EO"/>
-                        </p>
-                        <p> 
-                            <label for="passwordsignup_confirm" class="youpasswd" >Please confirm your password </label>
-                            <input id="passwordsignup_confirm" name="pass2" required="required" type="password" placeholder="eg. X8df90EO"/>
-                        </p>
-                        <p class="signin button"> 
-                            <input type="submit" value="Sign up"/> 
-                        </p>
-                        <p class="change_link">  
-                            Already a member ?
-                            <a href="#tologin" class="to_register"> Go and log in </a>
-                        </p>
-                    </form>
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 text">
+
+                        <div class="form-box">
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>Login to our site</h3>
+                                    <p>Enter email and password to log on:</p>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-key"></i>
+                                </div>
+                            </div>
+                            <div class="form-bottom">
+                                <form role="form" action="" method="post" class="login-form">
+                                    <div class="form-group">
+                                        <label class="sr-only" for="form-username">Email</label>
+                                        <input type="text" name="email" placeholder="Email..." class="form-username form-control" id="form-username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="form-password">Password</label>
+                                        <input type="password" name="pass" placeholder="Password..." class="form-password form-control" id="form-password">
+                                    </div>
+                                    <button type="submit" class="btn">Sign in!</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="social-login">
+                            <h3>Not a member yet? </h3>
+                            <div class="social-login-buttons">
+                                <a href="register">Join Us</a>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
+
             </div>
-        </div>  
-    </section>
+        </div>
+
+    </div>
+
 {% endblock %}
+

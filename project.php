@@ -9,9 +9,9 @@ require_once 'vendor/FlashMessages.php';
 //DB::$host = '127.0.0.1';
 
 DB::$user = 'onlinefilemanagement';
-DB::$password = '3Sd3zRlaytWeEYHa';
+DB::$password = 'LvhlXVvl4FIz1dH4';
 DB::$dbName = 'onlinefilemanagement';
-DB::$port = 3306;
+DB::$port = 3333;
 DB::$encoding = 'utf8';
 /*
 DB::$user = 'cp4776_ofms_wy ';
@@ -58,10 +58,10 @@ $app->get('/register', function() use ($app) {
 // Receiving a submission
 $app->post('/register', function() use ($app) {
     // extract variables
-    $email = $app->request()->post('useremail');
+    $email = $app->request()->post('email');
     $pass1 = $app->request()->post('pass1');
     $pass2 = $app->request()->post('pass2');
-    $name = $app->request()->post('username');
+    $name = $app->request()->post('name');
     // list of values to retain after a failed submission
     $valueList = array(
         'email' => $email,
