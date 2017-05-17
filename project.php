@@ -9,9 +9,9 @@ require_once 'vendor/FlashMessages.php';
 //DB::$host = '127.0.0.1';
 
 DB::$user = 'onlinefilemanagement';
-DB::$password = 'LvhlXVvl4FIz1dH4';
+DB::$password = 'R4kKpF83tRURhpVw';
 DB::$dbName = 'onlinefilemanagement';
-DB::$port = 3333;
+DB::$port = 3306;
 DB::$encoding = 'utf8';
 /*
 DB::$user = 'cp4776_ofms_wy ';
@@ -92,9 +92,10 @@ $app->post('/register', function() use ($app) {
     }
     //
     if ($errorList) {
-        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $app->render('register.html.twig',array("errorList" => $errorList));
+        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
         $msg->error($errorList);
-        $msg->display();
+        $msg->display();*/
     } else {
         DB::insert('users', $valueList);
         $app->render('register_success.html.twig');
@@ -130,9 +131,11 @@ $app->post('/login', function() use ($app) {
     }
     // decide what to render
     if ($error) {
-        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $app->render('login.html.twig',array("error" => $error));
+  
+        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
         $msg->error('Login failed try again.');
-        $msg->display();
+        $msg->display();*/
     } else {
         unset($user['password']);
         $_SESSION['todouser'] = $user;
@@ -279,7 +282,7 @@ $app->post('/download', function() use ($app) {
 //Admin action: list, edit, delete, and block
 //List
 $app->get('/admin/list', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -287,7 +290,7 @@ $app->get('/admin/list', function() use ($app) {
 });
 
 $app->post('/admin/list', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -295,7 +298,7 @@ $app->post('/admin/list', function() use ($app) {
 
 //Edit
 $app->get('/admin/edit', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -303,7 +306,7 @@ $app->get('/admin/edit', function() use ($app) {
 });
 
 $app->post('/admin/edit', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -311,7 +314,7 @@ $app->post('/admin/edit', function() use ($app) {
 
 //Delete
 $app->get('/admin/delete', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -319,7 +322,7 @@ $app->get('/admin/delete', function() use ($app) {
 });
 
 $app->post('/admin/delete', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -327,7 +330,7 @@ $app->post('/admin/delete', function() use ($app) {
 
 //Block
 $app->get('/admin/block', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -335,7 +338,7 @@ $app->get('/admin/block', function() use ($app) {
 });
 
 $app->post('/admin/block', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
         $app->render('forbidden.html.twig');
         return;
     }
