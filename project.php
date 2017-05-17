@@ -7,16 +7,16 @@ require_once 'vendor/autoload.php';
 require_once 'vendor/FlashMessages.php';
 
 //DB::$host = '127.0.0.1';
-
-DB::$user = 'onlinefilemanagement';
-DB::$password = 'R4kKpF83tRURhpVw';
-DB::$dbName = 'onlinefilemanagement';
-DB::$port = 3306;
-DB::$encoding = 'utf8';
 /*
+DB::$user = 'onlinefilemanagement';
+DB::$password = 'W0GsBK8kVFrUBrMv';
+DB::$dbName = 'onlinefilemanagement';
+DB::$port = 3333;
+DB::$encoding = 'utf8';*/
+
 DB::$user = 'cp4776_ofms_wy ';
 DB::$password = 'Jg56AhAeGpmPa0ye';
-DB::$dbName = 'cp4776_ofms';*/
+DB::$dbName = 'cp4776_ofms';
 
 // Slim creation and setup
 $app = new \Slim\Slim(array(
@@ -48,6 +48,10 @@ if (!isset($_SESSION['todouser'])) {
 $twig = $app->view()->getEnvironment();
 $twig->addGlobal('todouser', $_SESSION['todouser']);
 
+
+$app->get('/', function() use ($app){
+    $app->render('register.html.twig');
+});
 
 // Login, Logout, and Register
 // Register
