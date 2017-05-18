@@ -1,7 +1,7 @@
 {# empty Twig template #}
 {% extends "master.html.twig" %}
 
-{% block title %} File delete {% endblock %}
+{% block title %} User delete {% endblock %}
 
 {% block content %}
     
@@ -14,8 +14,8 @@
     {% endif %}
     
     <form method="post">
-        File Name: <input type="text" name="filename" value="{{f.filename}}"><br>
-        <input type="submit" value="Delete File">
+        User Name: <input type="text" name="name" value="{{u.name}}"><br>
+        <input type="submit" value="Delete User">
     </form>    
-    <a href="/list">Return</a>
+ 
 {% endblock %}

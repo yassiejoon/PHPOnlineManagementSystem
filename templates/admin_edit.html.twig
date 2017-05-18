@@ -1,10 +1,10 @@
-{# empty Twig template #}
+
 {% extends "master.html.twig" %}
 
-{% block title %} File delete {% endblock %}
+{% block title %} User edit {% endblock %}
 
 {% block content %}
-    
+   
     {% if errorList %}
     <ul class="errorList">
         {% for error in errorList %}
@@ -14,8 +14,10 @@
     {% endif %}
     
     <form method="post">
-        File Name: <input type="text" name="filename" value="{{f.filename}}"><br>
-        <input type="submit" value="Delete File">
+        Change to Admin? <input type="checkbox" name="isAdmin" value="checked"
+                    {% if u.isAdmin == 'yes' %}checked{% endif %}
+                    ><br>
+        <input type="submit" value="Change">
     </form>    
-    <a href="/list">Return</a>
+    
 {% endblock %}

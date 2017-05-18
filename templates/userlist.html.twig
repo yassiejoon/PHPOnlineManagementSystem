@@ -1,0 +1,26 @@
+{# empty Twig template #}
+
+{% extends "master.html.twig" %}
+
+{% block title %} User List {% endblock %}
+
+{% block content %}
+    
+    <table border="1">
+        <tr><th>User Id</th><th>User Name</th><th>Email</th><th>Password</th><th>Is Admin</th><th>Operations</th></tr>
+        {% for u in userList %}
+            <tr>
+                <td>{{u.id}}</td>
+                <td>{{u.name}}</td>
+                <td>{{u.email}}</td>
+                <td>{{u.password}}</td>
+                <td>{{u.isAdmin}}</td>
+                <td><a href="/admin/edit/{{u.id}}">edit</a>
+                    <a href="/admin/delete/{{u.id}}">delete</a>
+                    <a href="/admin/block/{{u.id}}">block</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}{# empty Twig template #}

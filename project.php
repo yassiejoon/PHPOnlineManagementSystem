@@ -4,19 +4,44 @@ session_cache_limiter(false);
 session_start();
 
 require_once 'vendor/autoload.php';
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+// create a log channel
+$log = new Logger('main');
+$log->pushHandler(new StreamHandler('logs/everything.log', Logger::DEBUG));
+$log->pushHandler(new StreamHandler('logs/errors.log', Logger::ERROR));
+
 require_once 'vendor/FlashMessages.php';
+require_once 'local.php';
 
-//DB::$host = '127.0.0.1';
+
 /*
-DB::$user = 'onlinefilemanagement';
-DB::$password = 'W0GsBK8kVFrUBrMv';
-DB::$dbName = 'onlinefilemanagement';
-DB::$port = 3333;
-DB::$encoding = 'utf8';*/
+  DB::$user = 'cp4776_ofms_wy ';
+  DB::$password = 'Jg56AhAeGpmPa0ye';
+  DB::$dbName = 'cp4776_ofms';
+ */
 
-DB::$user = 'cp4776_ofms_wy ';
-DB::$password = 'Jg56AhAeGpmPa0ye';
-DB::$dbName = 'cp4776_ofms';
+DB::$error_handler = 'sql_error_handler';
+DB::$nonsql_error_handler = 'nonsql_error_handler';
+
+function nonsql_error_handler($params) {
+    global $app, $log;
+    $log->error("Database error: " . $params['error']);
+    http_response_code(500);
+    $app->render('error_internal.html.twig');
+    die;
+}
+
+function sql_error_handler($params) {
+    global $app, $log;
+    $log->error("SQL error: " . $params['error']);
+    $log->error(" in query: " . $params['query']);
+    http_response_code(500);
+    $app->render('error_internal.html.twig');
+    die; // don't want to keep going if a query broke
+}
 
 // Slim creation and setup
 $app = new \Slim\Slim(array(
@@ -32,15 +57,15 @@ $view->setTemplatesDirectory(dirname(__FILE__) . '/templates');
 
 $msg = new \Plasticbrain\FlashMessages\FlashMessages();
 /*
-// Add a few messages
-$msg->info('This is an info message');
-$msg->success('This is a success message');
-$msg->warning('This is a warning message');
-$msg->error('This is an error message');
- 
-// Display the messages
-$msg->display();
-*/
+  // Add a few messages
+  $msg->info('This is an info message');
+  $msg->success('This is a success message');
+  $msg->warning('This is a warning message');
+  $msg->error('This is an error message');
+
+  // Display the messages
+  $msg->display();
+ */
 if (!isset($_SESSION['todouser'])) {
     $_SESSION['todouser'] = array();
 }
@@ -49,7 +74,7 @@ $twig = $app->view()->getEnvironment();
 $twig->addGlobal('todouser', $_SESSION['todouser']);
 
 
-$app->get('/', function() use ($app){
+$app->get('/', function() use ($app) {
     $app->render('register.html.twig');
 });
 
@@ -96,10 +121,10 @@ $app->post('/register', function() use ($app) {
     }
     //
     if ($errorList) {
-        $app->render('register.html.twig',array("errorList" => $errorList));
-        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
-        $msg->error($errorList);
-        $msg->display();*/
+        $app->render('register.html.twig', array("errorList" => $errorList));
+        /* $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+          $msg->error($errorList);
+          $msg->display(); */
     } else {
         DB::insert('users', $valueList);
         $app->render('register_success.html.twig');
@@ -135,11 +160,11 @@ $app->post('/login', function() use ($app) {
     }
     // decide what to render
     if ($error) {
-        $app->render('login.html.twig',array("error" => $error));
-  
-        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
-        $msg->error('Login failed try again.');
-        $msg->display();*/
+        $app->render('login.html.twig', array("error" => $error));
+
+        /* $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+          $msg->error('Login failed try again.');
+          $msg->display(); */
     } else {
         unset($user['password']);
         $_SESSION['todouser'] = $user;
@@ -214,15 +239,17 @@ $app->get('/rename/:id', function($fileId) use ($app) {
         return;
     }
 
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%s", $fileId);
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    print_r($file);
     $errorList = array();
     if (!$file) {
         array_push($errorList, "File is not selected.");
-        $app->render('rename.html.twig', $errorList);
+        $app->render('rename.html.twig', array("errorList" => $errorList));
+    } else {
+        $app->render('rename.html.twig', array(
+            'f' => $file
+        ));
     }
-    $app->render('rename.html.twig', array(
-        'f' => $file
-    ));
 });
 
 $app->post('/rename/:id', function($fileId) use ($app) {
@@ -230,13 +257,13 @@ $app->post('/rename/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    
+
     $filename = $app->request()->post('filename');
     $fileList = array(
         "filename" => $filename,
         "modifiedDate" => date('Y-m-d H:i:s'));
-    
-    DB::update('files', $fileList, "id = %s", $fileId);
+
+    DB::update('files', $fileList, "id = %i", $fileId);
     $app->render("rename_success.html.twig");
 });
 
@@ -246,7 +273,7 @@ $app->get('/delete/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%s", $fileId);
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $errorList = array();
     if (!$file) {
         array_push($errorList, "File is not selected.");
@@ -263,7 +290,7 @@ $app->post('/delete/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    DB::delete('files', "id = %s", $fileId);
+    DB::delete('files', "id = %i", $fileId);
     $app->render("delete_success.html.twig");
 });
 
@@ -286,55 +313,74 @@ $app->post('/download', function() use ($app) {
 //Admin action: list, edit, delete, and block
 //List
 $app->get('/admin/list', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['todouser']['isAdmin'] != "yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('rename.html.twig');
-});
-
-$app->post('/admin/list', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
+    $userList = DB::query("SELECT * FROM users");
+    $app->render('userlist.html.twig', array('userList' => $userList));
 });
 
 //Edit
-$app->get('/admin/edit', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+$app->get('/admin/edit/:id', function($userId) use ($app) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('rename.html.twig');
+    $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
+    $errorList = array();
+    if (!$user) {
+        array_push($errorList, "User is not selected.");
+        $app->render('admin_edit.html.twig', $errorList);
+    }
+    $app->render('admin_edit.html.twig', array(
+        'u' => $user
+    ));
 });
 
-$app->post('/admin/edit', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+$app->post('/admin/edit/:id', function($userId) use ($app) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
+
+    $isAdmin = $app->request()->post('isAdmin') ? 'yes' : 'no';
+    $userList = array("isAdmin" => $isAdmin);
+
+    DB::update('users', $userList, "id = %i", $fileId);
+    $app->render("admin_edit_success.html.twig");
 });
 
 //Delete
-$app->get('/admin/delete', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+$app->get('/admin/delete/:id', function($userId) use ($app) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('rename.html.twig');
+
+    $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
+    $errorList = array();
+    if (!$user) {
+        array_push($errorList, "User is not selected.");
+        $app->render('admin_delete.html.twig', $errorList);
+    }
+    $app->render('admin_delete.html.twig', array(
+        'u' => $user
+    ));
 });
 
-$app->post('/admin/delete', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+$app->post('/admin/delete/:id', function($userId) use ($app) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
+    DB::delete('users', "id = %i", $userId);
+    $app->render("admin_delete_success.html.twig");
 });
 
 //Block
 $app->get('/admin/block', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -342,7 +388,7 @@ $app->get('/admin/block', function() use ($app) {
 });
 
 $app->post('/admin/block', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'true')) {
+    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
