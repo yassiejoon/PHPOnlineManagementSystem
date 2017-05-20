@@ -1,0 +1,32 @@
+
+Date: May 20th, 2017 
+
+Yas
+What did I do since last scrum:
+started coding style.css  
+
+
+
+What will be done until the next scrum:
+incorporate upload URL to the application
+finish main_page style
+
+
+
+Where do I need help / what do I need research.
+research on upload/download
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+download files and list users
+
+
+What will be done until the next scrum:
+edit and block
+
+
+Where do I need help / what do I need research.
+research on download
+

@@ -253,7 +253,6 @@ $app->get('/rename/:id', function($fileId) use ($app) {
     }
 
     $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
-    print_r($file);
     $errorList = array();
     if (!$file) {
         array_push($errorList, "File is not selected.");
@@ -270,14 +269,16 @@ $app->post('/rename/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-
     $filename = $app->request()->post('filename');
     $fileList = array(
         "filename" => $filename,
         "modifiedDate" => date('Y-m-d H:i:s'));
-
-    DB::update('files', $fileList, "id = %i", $fileId);
-    $app->render("rename_success.html.twig");
+    $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $filestr = implode(" ",$file);;
+    if(rename('uploads/'.$filestr,'uploads/'.$filename)){
+        DB::update('files', $fileList, "id = %i", $fileId);
+        $app->render("rename_success.html.twig");
+    }
 });
 
 //Delete
@@ -292,6 +293,7 @@ $app->get('/delete/:id', function($fileId) use ($app) {
         array_push($errorList, "File is not selected.");
         $app->render('delete.html.twig', $errorList);
     }
+
     $app->render('delete.html.twig', array(
         'f' => $file
     ));
@@ -303,8 +305,9 @@ $app->post('/delete/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
-    if(unlink($file["filename"])){
+    $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $filestr = implode(" ",$file);;
+    if(unlink('uploads/'.$filestr)){
     DB::delete('files', "id = %i", $fileId);
     $app->render("delete_success.html.twig");
     }
@@ -316,7 +319,17 @@ $app->get('/download', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('rename.html.twig');
+    
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    $errorList = array();
+    if (!$file) {
+        array_push($errorList, "File is not selected.");
+        $app->render('delete.html.twig', $errorList);
+    }
+
+    $app->render('download.html.twig', array(
+        'f' => $file
+    ));
 });
 
 $app->post('/download', function() use ($app) {
