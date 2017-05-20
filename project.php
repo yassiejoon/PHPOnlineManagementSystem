@@ -66,12 +66,12 @@ $msg = new \Plasticbrain\FlashMessages\FlashMessages();
   // Display the messages
   $msg->display();
  */
-if (!isset($_SESSION['todouser'])) {
-    $_SESSION['todouser'] = array();
+if (!isset($_SESSION['user'])) {
+    $_SESSION['user'] = array();
 }
 
 $twig = $app->view()->getEnvironment();
-$twig->addGlobal('todouser', $_SESSION['todouser']);
+$twig->addGlobal('user', $_SESSION['user']);
 
 
 $app->get('/', function() use ($app) {
@@ -167,21 +167,21 @@ $app->post('/login', function() use ($app) {
           $msg->display(); */
     } else {
         unset($user['password']);
-        $_SESSION['todouser'] = $user;
+        $_SESSION['user'] = $user;
         $app->render('login_success.html.twig');
     }
 });
 
 //Logout
 $app->get('/logout', function() use ($app) {
-    unset($_SESSION['todouser']);
+    unset($_SESSION['user']);
     $app->render('logout.html.twig');
 });
 
 //User action: upload, list, rename, download and delete
 //Upload
 $app->get('/upload', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -189,52 +189,65 @@ $app->get('/upload', function() use ($app) {
 });
 
 $app->post('/upload', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
     $errorList = array();
-    $filename = isset($_FILES['filename']) ? $_FILES['filename'] : array();
+    $file = isset($_FILES['filename']) ? $_FILES['filename'] : array();
+    $target_dir = "uploads/";
+    $target_file = $target_dir . $_FILES["filename"]["name"];
 
-    //
-    if (!$filename) {
+    if (!$file) {
         array_push($errorList, "File is required to upload.");
+    } else {
+        $fileInfo = getimagesize($file["tmp_name"]);
+        if (!$fileInfo) {
+            array_push($errorList, "File does not look like an valid one");
+        } else {
+            // FIXME: opened a security hole here! .. must be forbidden
+            if (strstr($file["name"], "..")) {
+                array_push($errorList, "File name invalid");
+            }
+            // FIXME: do not allow file to override an previous upload
+            if (file_exists('uploads/' . $file['name'])) {
+                array_push($errorList, "File name already exists. Will not override.");
+            }
+        }
     }
-    //
     if ($errorList) {
         $app->render("upload.html.twig", array(
             "errorList" => $errorList
         ));
     } else {
+        move_uploaded_file($_FILES["filename"]["tmp_name"], $target_file);
 
-        $filePath = "uploads/" . $filename["name"];
-        move_uploaded_file($filename["name"], $filePath);
         DB::insert('files', array(
-            "userId" => $_SESSION['todouser']['id'],
-            "filename" => $filename["name"],
+            "userId" => $_SESSION['user']['id'],
+            "filename" => $file["name"],
             "modifiedDate" => date('Y-m-d H:i:s'),
             "size" => $_FILES["filename"]["size"] / 1024
         ));
         $app->render("upload_success.html.twig", array(
-            "filePath" => $filePath
+            "filePath" => $target_file
         ));
     }
 });
 
 //List
 $app->get('/list', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('index_please_login.html.twig');
         return;
     }
-    $userId = $_SESSION['todouser']['id'];
+    $userId = $_SESSION['user']['id'];
     $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
     $app->render('filelist.html.twig', array('fileList' => $fileList));
 });
 
 //Rename
 $app->get('/rename/:id', function($fileId) use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -253,7 +266,7 @@ $app->get('/rename/:id', function($fileId) use ($app) {
 });
 
 $app->post('/rename/:id', function($fileId) use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -269,7 +282,7 @@ $app->post('/rename/:id', function($fileId) use ($app) {
 
 //Delete
 $app->get('/delete/:id', function($fileId) use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -286,17 +299,20 @@ $app->get('/delete/:id', function($fileId) use ($app) {
 
 
 $app->post('/delete/:id', function($fileId) use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
+    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    if(unlink($file["filename"])){
     DB::delete('files', "id = %i", $fileId);
     $app->render("delete_success.html.twig");
+    }
 });
 
 //Download
 $app->get('/download', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -304,7 +320,7 @@ $app->get('/download', function() use ($app) {
 });
 
 $app->post('/download', function() use ($app) {
-    if (!$_SESSION['todouser']) {
+    if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -313,7 +329,7 @@ $app->post('/download', function() use ($app) {
 //Admin action: list, edit, delete, and block
 //List
 $app->get('/admin/list', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['todouser']['isAdmin'] != "yes")) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != "yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -323,7 +339,7 @@ $app->get('/admin/list', function() use ($app) {
 
 //Edit
 $app->get('/admin/edit/:id', function($userId) use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -339,7 +355,7 @@ $app->get('/admin/edit/:id', function($userId) use ($app) {
 });
 
 $app->post('/admin/edit/:id', function($userId) use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -347,13 +363,13 @@ $app->post('/admin/edit/:id', function($userId) use ($app) {
     $isAdmin = $app->request()->post('isAdmin') ? 'yes' : 'no';
     $userList = array("isAdmin" => $isAdmin);
 
-    DB::update('users', $userList, "id = %i", $fileId);
+    DB::update('users', $userList, "id = %i", $userId);
     $app->render("admin_edit_success.html.twig");
 });
 
 //Delete
 $app->get('/admin/delete/:id', function($userId) use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -370,7 +386,7 @@ $app->get('/admin/delete/:id', function($userId) use ($app) {
 });
 
 $app->post('/admin/delete/:id', function($userId) use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -380,7 +396,7 @@ $app->post('/admin/delete/:id', function($userId) use ($app) {
 
 //Block
 $app->get('/admin/block', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -388,7 +404,7 @@ $app->get('/admin/block', function() use ($app) {
 });
 
 $app->post('/admin/block', function() use ($app) {
-    if ((!$_SESSION['todouser']) || ($_SESSION['isAdmin'] != 'yes')) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
         $app->render('forbidden.html.twig');
         return;
     }
