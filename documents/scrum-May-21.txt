@@ -1,0 +1,31 @@
+
+Date: May 21th, 2017 
+
+Yas
+What did I do since last scrum:
+started coding style.css  
+
+
+
+What will be done until the next scrum:
+finish password reset 
+
+
+
+Where do I need help / what do I need research.
+research on password reset 
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+block user and download file
+
+
+What will be done until the next scrum:
+build the template for main page
+
+
+Where do I need help / what do I need research.
+research on flash message
+
