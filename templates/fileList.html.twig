@@ -15,8 +15,9 @@
                 <td>{{f.filename}}</td>
                 <td>{{f.modifiedDate}}</td>
                 <td>{{f.size}}</td>
-                <td><a href="/rename/{{f.id}}">rename</a>
-                    <a href="/delete/{{f.id}}">delete</a>
+                <td><a href="/rename/{{f.id}}">Rename</a>
+                    <a href="/delete/{{f.id}}">Delete</a>
+                    <a href="/download/{{f.id}}">Download</a>
                 </td>
             </tr>
         {% endfor %}

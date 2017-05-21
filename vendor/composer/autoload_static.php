@@ -10,6 +10,7 @@ class ComposerStaticInite51f88fb069e6ce1b9d859cc8e34ab51
         'S' => 
         array (
             'Slim\\Views\\' => 11,
+            'SimoTod\\SlimDownload\\' => 21,
         ),
         'P' => 
         array (
@@ -25,6 +26,10 @@ class ComposerStaticInite51f88fb069e6ce1b9d859cc8e34ab51
         'Slim\\Views\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/views',
+        ),
+        'SimoTod\\SlimDownload\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simotod/slim-download/src',
         ),
         'Psr\\Log\\' => 
         array (

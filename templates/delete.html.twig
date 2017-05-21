@@ -13,9 +13,16 @@
     </ul>
     {% endif %}
     
-    <form method="post">
-        File Name: <input type="text" name="filename" value="{{f.filename}}"><br>
-        <input type="submit" value="Delete File">
-    </form>    
+    <p> Are you sure you want to delete this file?</p>
+    <form style="display: inline-block" action="/list">
+        <input type="submit" value="Cancel"></form>
+    <form style="display: inline-block" method="post">
+        <input type="hidden" name="delete" value="confirmed">
+        <input type="submit" value="Yes, delete"></form>
+    <p>
+        {{f.filename}} / size(KB) : {{f.size}} / modified at {{f.modifiedDate}}
+    </p>
+    
+ 
     <a href="/list">Return</a>
 {% endblock %}

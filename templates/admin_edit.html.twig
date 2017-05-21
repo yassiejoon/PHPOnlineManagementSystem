@@ -5,14 +5,6 @@
 
 {% block content %}
    
-    {% if errorList %}
-    <ul class="errorList">
-        {% for error in errorList %}
-            <li> {{ error }} </li>
-            {% endfor %}
-    </ul>
-    {% endif %}
-    
     <form method="post">
         Change to Admin? <input type="checkbox" name="isAdmin" value="checked"
                     {% if u.isAdmin == 'yes' %}checked{% endif %}

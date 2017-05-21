@@ -17,6 +17,7 @@ require_once 'vendor/FlashMessages.php';
 require_once 'local.php';
 
 
+
 /*
   DB::$user = 'cp4776_ofms_wy ';
   DB::$password = 'Jg56AhAeGpmPa0ye';
@@ -145,7 +146,6 @@ $app->get('/login', function() use ($app) {
 });
 
 $app->post('/login', function() use ($app) {
-//    print_r($_POST);    
     $email = $app->request()->post('email');
     $pass = $app->request()->post('pass');
     // verification    
@@ -168,7 +168,11 @@ $app->post('/login', function() use ($app) {
     } else {
         unset($user['password']);
         $_SESSION['user'] = $user;
+        if($user['isActive'] == 'no'){
+            $app->render('block.html.twig');
+        }else{
         $app->render('login_success.html.twig');
+        }
     }
 });
 
@@ -252,14 +256,16 @@ $app->get('/rename/:id', function($fileId) use ($app) {
         return;
     }
 
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $errorList = array();
-    if (!$file) {
-        array_push($errorList, "File is not selected.");
+    $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $filestr = implode(" ", $file);
+    if (!file_exists('uploads/' . $filestr)) {
+        array_push($errorList, "File is not exist.");
         $app->render('rename.html.twig', array("errorList" => $errorList));
     } else {
         $app->render('rename.html.twig', array(
-            'f' => $file
+            'f' => $fileList
         ));
     }
 });
@@ -274,8 +280,8 @@ $app->post('/rename/:id', function($fileId) use ($app) {
         "filename" => $filename,
         "modifiedDate" => date('Y-m-d H:i:s'));
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
-    $filestr = implode(" ",$file);;
-    if(rename('uploads/'.$filestr,'uploads/'.$filename)){
+    $filestr = implode(" ", $file);
+    if (rename('uploads/' . $filestr, 'uploads/' . $filename)) {
         DB::update('files', $fileList, "id = %i", $fileId);
         $app->render("rename_success.html.twig");
     }
@@ -287,15 +293,17 @@ $app->get('/delete/:id', function($fileId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $errorList = array();
-    if (!$file) {
-        array_push($errorList, "File is not selected.");
+    $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $filestr = implode(" ", $file);
+    if (!file_exists('uploads/' . $filestr)) {
+        array_push($errorList, "File is not exist.");
         $app->render('delete.html.twig', $errorList);
     }
 
     $app->render('delete.html.twig', array(
-        'f' => $file
+        'f' => $fileList
     ));
 });
 
@@ -306,37 +314,45 @@ $app->post('/delete/:id', function($fileId) use ($app) {
         return;
     }
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
-    $filestr = implode(" ",$file);;
-    if(unlink('uploads/'.$filestr)){
-    DB::delete('files', "id = %i", $fileId);
-    $app->render("delete_success.html.twig");
+    $filestr = implode(" ", $file);
+    if (unlink('uploads/' . $filestr)) {
+        DB::delete('files', "id = %i", $fileId);
+        $app->render("delete_success.html.twig");
     }
 });
 
 //Download
-$app->get('/download', function() use ($app) {
+$app->get('/download/:id', function($fileId) use ($app) {
     if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
-    
-    $file = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $errorList = array();
-    if (!$file) {
-        array_push($errorList, "File is not selected.");
-        $app->render('delete.html.twig', $errorList);
+    $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
+    $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $filestr = implode(" ", $file);
+    if (!file_exists('uploads/' . $filestr)) {
+        array_push($errorList, "File is not exist.");
+        $app->render('download.html.twig', $errorList);
     }
 
     $app->render('download.html.twig', array(
-        'f' => $file
+        'f' => $fileList
     ));
 });
 
-$app->post('/download', function() use ($app) {
+$app->post('/download/:id', function($fileId) use ($app) {
     if (!$_SESSION['user']) {
         $app->render('forbidden.html.twig');
         return;
     }
+
+    $filename = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $file = implode(" ", $filename);
+
+    $filepath = 'uploads/' . $file;
+    $app->view(new \SimoTod\SlimDownload\DownloadView());
+    $app->render($filepath);
 });
 
 //Admin action: list, edit, delete, and block
@@ -356,12 +372,7 @@ $app->get('/admin/edit/:id', function($userId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
-    $errorList = array();
-    if (!$user) {
-        array_push($errorList, "User is not selected.");
-        $app->render('admin_edit.html.twig', $errorList);
-    }
+    $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId); 
     $app->render('admin_edit.html.twig', array(
         'u' => $user
     ));
@@ -374,11 +385,40 @@ $app->post('/admin/edit/:id', function($userId) use ($app) {
     }
 
     $isAdmin = $app->request()->post('isAdmin') ? 'yes' : 'no';
-    $userList = array("isAdmin" => $isAdmin);
+    $userList = array(
+        "isAdmin" => $isAdmin,
+    );
 
     DB::update('users', $userList, "id = %i", $userId);
     $app->render("admin_edit_success.html.twig");
 });
+//Block
+$app->get('/admin/block/:id', function($userId) use ($app) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+    $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
+    $app->render('admin_block.html.twig', array(
+        'u' => $user
+    ));
+});
+
+$app->post('/admin/block/:id', function($userId) use ($app) {
+    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+
+    $isActive = $app->request()->post('isActive') ? 'no' : 'yes';
+    $userList = array(
+        "isActive" => $isActive
+    );
+
+    DB::update('users', $userList, "id = %i", $userId);
+    $app->render("admin_block_success.html.twig");
+});
+
 
 //Delete
 $app->get('/admin/delete/:id', function($userId) use ($app) {
@@ -386,13 +426,7 @@ $app->get('/admin/delete/:id', function($userId) use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
-    $errorList = array();
-    if (!$user) {
-        array_push($errorList, "User is not selected.");
-        $app->render('admin_delete.html.twig', $errorList);
-    }
     $app->render('admin_delete.html.twig', array(
         'u' => $user
     ));
@@ -407,21 +441,6 @@ $app->post('/admin/delete/:id', function($userId) use ($app) {
     $app->render("admin_delete_success.html.twig");
 });
 
-//Block
-$app->get('/admin/block', function() use ($app) {
-    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-    $app->render('rename.html.twig');
-});
-
-$app->post('/admin/block', function() use ($app) {
-    if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
-        return;
-    }
-});
 
 // FOR DIAGNOSTIC PURPOSES ONLY - REMOVE IN PRODUCTION
 $app->get('/session', function() {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d82203b4b4be14384ae2a01b7e0f083",
+    "content-hash": "46b2f282a092226772e2a2cf2029b57f",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -175,6 +175,51 @@
             "time": "2014-06-16T22:40:22+00:00"
         },
         {
+            "name": "simotod/slim-download",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SimoTod/slim-download.git",
+                "reference": "c13ac808c692ff76cfeeceff75eb2b14fa7b0867"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SimoTod/slim-download/zipball/c13ac808c692ff76cfeeceff75eb2b14fa7b0867",
+                "reference": "c13ac808c692ff76cfeeceff75eb2b14fa7b0867",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "slim/slim": "^2.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SimoTod\\SlimDownload\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Simone Todaro",
+                    "email": "simo.todaro@gmail.com",
+                    "homepage": "https://github.com/SimoTod",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Slim extension to implement download view render",
+            "homepage": "https://github.com/SimoTod/slim-download",
+            "keywords": [
+                "download",
+                "slim",
+                "view"
+            ],
+            "time": "2015-03-22 15:25:25"
+        },
+        {
             "name": "slim/slim",
             "version": "2.6.3",
             "source": {
@@ -340,7 +385,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "simotod/slim-download": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

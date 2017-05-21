@@ -1,21 +1,21 @@
 {# empty Twig template #}
 {% extends "master.html.twig" %}
 
-{% block title %} Forbidden Operation{% endblock %}
+{% block title %}Block Info{% endblock %}
 
 {% block head %}
-    <meta http-equiv="refresh" content="5;url=/list" />
+    <meta http-equiv="refresh" content="5;url=/login" />
     
     <script>
         $(document).ready(function () {
             window.setTimeout(function () {
-                location.href = "/list";
+                location.href = "/login";
             }, 5000);
         });
     </script> 
 {% endblock %}
 
 {% block content %}
-    <h2>Forbidden Operation.</h2>
-    <a href="/list">Click to list</a> or you will be redirected in 5 seconds.
+    <h1>Your account is block, call 911</h1>
+    <a href="/login">Click to login</a> or you will be redirected in 5 seconds.
 {% endblock %}

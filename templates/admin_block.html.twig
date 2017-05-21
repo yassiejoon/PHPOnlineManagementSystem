@@ -1,0 +1,16 @@
+{# empty Twig template #}
+
+{% extends "master.html.twig" %}
+
+{% block title %} User block {% endblock %}
+
+{% block content %}
+   
+    <form method="post">
+        Change to Block? <input type="checkbox" name="isActive" value="checked"
+                    {% if u.isActive == 'no' %}checked{% endif %}
+                    ><br>
+        <input type="submit" value="Change">
+    </form>    
+    
+{% endblock %}

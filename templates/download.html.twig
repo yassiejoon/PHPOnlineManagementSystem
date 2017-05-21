@@ -1,7 +1,6 @@
-{# empty Twig template #}
 {% extends "master.html.twig" %}
 
-{% block title %} File rename {% endblock %}
+{% block title %} File download {% endblock %}
 
 {% block content %}
     
@@ -15,7 +14,7 @@
     
     <form method="post">
         File Name: <input type="text" name="filename" value="{{f.filename}}"><br>
-        <input type="submit" value="Rename File">
+        <input type="submit" value="Download File">
     </form>    
     
     <a href="/list">return</a>

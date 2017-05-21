@@ -340,5 +340,52 @@
             "mysqli",
             "pdo"
         ]
+    },
+    {
+        "name": "simotod/slim-download",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/SimoTod/slim-download.git",
+            "reference": "c13ac808c692ff76cfeeceff75eb2b14fa7b0867"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/SimoTod/slim-download/zipball/c13ac808c692ff76cfeeceff75eb2b14fa7b0867",
+            "reference": "c13ac808c692ff76cfeeceff75eb2b14fa7b0867",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0",
+            "slim/slim": "^2.3.0"
+        },
+        "time": "2015-03-22T15:25:25+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "SimoTod\\SlimDownload\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Simone Todaro",
+                "email": "simo.todaro@gmail.com",
+                "homepage": "https://github.com/SimoTod",
+                "role": "Developer"
+            }
+        ],
+        "description": "Slim extension to implement download view render",
+        "homepage": "https://github.com/SimoTod/slim-download",
+        "keywords": [
+            "download",
+            "slim",
+            "view"
+        ]
     }
 ]
