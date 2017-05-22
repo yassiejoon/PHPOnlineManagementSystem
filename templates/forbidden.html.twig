@@ -16,6 +16,13 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Forbidden Operation.</h2>
-    <a href="/list">Click to list</a> or you will be redirected in 5 seconds.
+    <div id="bground" class="">
+        <div id="bground-header">
+            <a style="font-size: 28px; color: red; font-weight: bold">Forbidden Operation.</a><br>
+            <a href="/list" style="color: red; font-size: 16px; text-decoration: underline">
+                Click to list
+            </a>
+            <a style="color: red; font-size: 16px">or you will be redirected in 5 seconds.</a>
+        </div>
+    </div>
 {% endblock %}

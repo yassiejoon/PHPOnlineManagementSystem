@@ -1,15 +1,17 @@
-
-{% extends "master.html.twig" %}
+{% extends "admin_master.html.twig" %}
 
 {% block title %} User edit {% endblock %}
+
+{% block title_extra %} User edit {% endblock %}
 
 {% block content %}
    
     <form method="post">
         Change to Admin? <input type="checkbox" name="isAdmin" value="checked"
                     {% if u.isAdmin == 'yes' %}checked{% endif %}
-                    ><br>
+                    ><br><br>
         <input type="submit" value="Change">
     </form>    
     
 {% endblock %}
+
