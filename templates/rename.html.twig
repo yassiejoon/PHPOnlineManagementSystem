@@ -4,19 +4,25 @@
 {% block title %} File rename {% endblock %}
 
 {% block content %}
-    
+    <div id="psdgraphics-com-table" class="" style="width:auto; margin-top: 25px; text-align: center">
+        <div id="psdg-header">
+            <a href="/list" class="psdg-button" style="text-align: center">
+                File List
+            </a>
+        </div>
+ 
     {% if errorList %}
-    <ul class="errorList">
+    <ul class="errorList" style="text-align: center">
         {% for error in errorList %}
             <li> {{ error }} </li>
             {% endfor %}
     </ul>
     {% endif %}
-    
-    <form method="post">
+    <form method="post" style="text-align: center">
         File Name: <input type="text" name="filename" value="{{f.filename}}"><br>
         <input type="submit" value="Rename File">
     </form>    
     
-    <a href="/list">return</a>
+    
+    </div>
 {% endblock %}

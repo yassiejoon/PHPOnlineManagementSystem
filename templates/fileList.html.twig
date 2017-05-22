@@ -4,23 +4,53 @@
 {% block title %} File List {% endblock %}
 
 {% block content %}
-    <a href="/upload">Upload</a><br>
-    <a href="/admin/list">User List</a>
-    <table border="1">
-        <tr><th>File Id</th><th>User Id</th><th>File Name</th><th>Modified Date</th><th>Size(KB)</th><th>Operations</th></tr>
-        {% for f in fileList %}
-            <tr>
-                <td>{{f.id}}</td>
-                <td>{{f.userId}}</td>
-                <td>{{f.filename}}</td>
-                <td>{{f.modifiedDate}}</td>
-                <td>{{f.size}}</td>
-                <td><a href="/rename/{{f.id}}">Rename</a>
-                    <a href="/delete/{{f.id}}">Delete</a>
-                    <a href="/download/{{f.id}}">Download</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+
+    <div id="psdgraphics-com-table">
+
+        <div id="psdg-header">
+            <a href="/upload" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
+                Upload
+            </a>
+            <a href="/admin/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
+                User List
+            </a>
+        </div>
+
+        <div id="psdg-top">
+            <div class="psdg-top-cell" style="width:7%">File Id</div>
+            <div class="psdg-top-cell" style="width:7%">User Id</div>
+            <div class="psdg-top-cell" style="width:20%">File Name</div>
+            <div class="psdg-top-cell" style="width:20%">Modified Date</div>
+            <div class="psdg-top-cell" style="width:10%">Size(KB)</div>
+            <div class="psdg-top-cell" style="width:35%">Operations</div>
+        </div>
+
+        <div id="psdg-middle">
+
+            {% for f in fileList %}
+
+                <div class="psdg-left" style="width:7%">{{f.id}}</div>
+                <div class="psdg-right" style="width:7%">{{f.userId}}</div>
+                <div class="psdg-right" style="width:20%">{{f.filename}}</div>
+                <div class="psdg-right" style="width:20%">{{f.modifiedDate}}</div>
+                <div class="psdg-right" style="width:10%">{{f.size}}</div>
+                <div class="psdg-right" style="width:35%">
+                    <a href="/rename/{{f.id}}" class="psdg-button1" style="float:left">Rename</a>
+                    <a href="/delete/{{f.id}}" class="psdg-button1" style="float:left">Delete</a>
+                    <a href="/download/{{f.id}}" class="psdg-button1" style="float:left">Download</a>
+                </div>
+
+            {% endfor %}
+
+        </div>
+        <div id="psdg-bottom">
+            <div class="psdg-top-cell" style="width:7%">File Id</div>
+            <div class="psdg-top-cell" style="width:7%">User Id</div>
+            <div class="psdg-top-cell" style="width:20%">File Name</div>
+            <div class="psdg-top-cell" style="width:20%">Modified Date</div>
+            <div class="psdg-top-cell" style="width:10%">Size(KB)</div>
+            <div class="psdg-top-cell" style="width:35%">Operations</div>
+        </div>
+    </div>
 
 {% endblock %}

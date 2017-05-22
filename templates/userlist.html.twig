@@ -5,23 +5,56 @@
 {% block title %} User List {% endblock %}
 
 {% block content %}
-    
-    <table border="1">
-        <tr><th>User Id</th><th>User Name</th><th>Email</th><th>Password</th><th>Is Admin</th><th>Is Active</th><th>Operations</th></tr>
-        {% for u in userList %}
-            <tr>
-                <td>{{u.id}}</td>
-                <td>{{u.name}}</td>
-                <td>{{u.email}}</td>
-                <td>{{u.password}}</td>
-                <td>{{u.isAdmin}}</td>
-                <td>{{u.isActive}}</td>
-                <td><a href="/admin/edit/{{u.id}}">edit</a>
-                    <a href="/admin/delete/{{u.id}}">delete</a>
-                    <a href="/admin/block/{{u.id}}">block</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
 
-{% endblock %}{# empty Twig template #}
+    <div id="psdgraphics-com-table">
+
+        <div id="psdg-header">
+            <a href="/admin/add" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
+                Add User
+            </a>
+            <a href="/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
+                File List
+            </a>
+        </div>
+
+        <div id="psdg-top">
+            <div class="psdg-top-cell" style="width:7%">User Id</div>
+            <div class="psdg-top-cell" style="width:16%">User Name</div>
+            <div class="psdg-top-cell" style="width:16%">Email</div>
+            <div class="psdg-top-cell" style="width:16%">Password</div>
+            <div class="psdg-top-cell" style="width:7%">Is Admin</div>
+            <div class="psdg-top-cell" style="width:7%">Is Active</div>
+            <div class="psdg-top-cell" style="width:30%">Operations</div>
+        </div>
+
+        <div id="psdg-middle">
+
+        {% for u in userList %}
+
+                <div class="psdg-left" style="width:7%">{{u.id}}</div>
+                <div class="psdg-right" style="width:16%">{{u.name}}</div>
+                <div class="psdg-right" style="width:16%">{{u.email}}</div>
+                <div class="psdg-right" style="width:16%">{{u.password}}</div>
+                <div class="psdg-right" style="width:7%">{{u.isAdmin}}</div>
+                <div class="psdg-right" style="width:7%">{{u.isActive}}</div>
+                <div class="psdg-right" style="width:30%">
+                    <a href="/admin/edit/{{u.id}}" class="psdg-button2" style="float:left">edit</a>
+                    <a href="/admin/delete/{{u.id}}" class="psdg-button2" style="float:left">delete</a>
+                    <a href="/admin/block/{{u.id}}" class="psdg-button2" style="float:left">block</a>
+                </div>
+
+            {% endfor %}
+
+        </div>
+        <div id="psdg-bottom">
+            <div class="psdg-top-cell" style="width:7%">User Id</div>
+            <div class="psdg-top-cell" style="width:16%">User Name</div>
+            <div class="psdg-top-cell" style="width:16%">Email</div>
+            <div class="psdg-top-cell" style="width:16%">Password</div>
+            <div class="psdg-top-cell" style="width:7%">Is Admin</div>
+            <div class="psdg-top-cell" style="width:7%">Is Active</div>
+            <div class="psdg-top-cell" style="width:30%">Operations</div>
+        </div>
+    </div>
+
+{% endblock %}

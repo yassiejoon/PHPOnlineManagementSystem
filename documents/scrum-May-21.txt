@@ -1,5 +1,5 @@
 
-Date: May 21th, 2017 
+Date: May 22th, 2017 
 
 Yas
 What did I do since last scrum:
@@ -8,7 +8,7 @@ started coding style.css
 
 
 What will be done until the next scrum:
-finish password reset 
+finish password reset(continue)
 
 
 
@@ -19,11 +19,11 @@ research on password reset
 
 Wei
 What did I do/ did not do since last scrum:
-block user and download file
+build the template for main page
 
 
 What will be done until the next scrum:
-build the template for main page
+build the template for main page(continue)
 
 
 Where do I need help / what do I need research.
