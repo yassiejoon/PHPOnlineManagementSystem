@@ -1,0 +1,21 @@
+{
+ "name": "mesingh/php-flash-messages",
+ "type": "library",
+ "description": "Session-based Flash Messages class for PHP",
+ "keywords": ["php-flash-messages","flash","messages","sessions"],
+ "homepage": "https://github.com/meSingh/PHP-Flash-Messages",
+ "license": "Apache",
+ "authors": [
+        {
+            "name": "Mandeep Singh",
+            "email": "mandeep@websterfolks.com",
+            "homepage": "http://www.msingh.me"
+        }
+    ], 
+    "require": {
+        "php": ">=5.3.0"        
+    },
+    "autoload": {
+        "files": [ "class.messages.php" ]
+    }
+}
