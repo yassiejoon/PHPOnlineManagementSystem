@@ -185,7 +185,7 @@ $app->get('/logout', function() use ($app) {
 //User action: upload, list, rename, download and delete
 //Upload
 $app->get('/upload', function() use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -193,7 +193,7 @@ $app->get('/upload', function() use ($app) {
 });
 
 $app->post('/upload', function() use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -240,7 +240,7 @@ $app->post('/upload', function() use ($app) {
 
 //List
 $app->get('/list', function() use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('index_please_login.html.twig');
         return;
     }
@@ -251,7 +251,7 @@ $app->get('/list', function() use ($app) {
 
 //Rename
 $app->get('/rename/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -271,7 +271,7 @@ $app->get('/rename/:id', function($fileId) use ($app) {
 });
 
 $app->post('/rename/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -289,7 +289,7 @@ $app->post('/rename/:id', function($fileId) use ($app) {
 
 //Delete
 $app->get('/delete/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -309,7 +309,7 @@ $app->get('/delete/:id', function($fileId) use ($app) {
 
 
 $app->post('/delete/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -323,7 +323,7 @@ $app->post('/delete/:id', function($fileId) use ($app) {
 
 //Download
 $app->get('/download/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -342,7 +342,7 @@ $app->get('/download/:id', function($fileId) use ($app) {
 });
 
 $app->post('/download/:id', function($fileId) use ($app) {
-    if (!$_SESSION['user']) {
+    if (!$_SESSION['user']||($_SESSION['user']['isAdmin']!="yes")) {
         $app->render('forbidden.html.twig');
         return;
     }
@@ -355,7 +355,7 @@ $app->post('/download/:id', function($fileId) use ($app) {
     $app->render($filepath);
 });
 
-//Admin action: list, edit, delete, and block
+//Admin action: list, edit, delete, block, view
 //List
 $app->get('/admin/list', function() use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != "yes")) {

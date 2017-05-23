@@ -4,8 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "46b2f282a092226772e2a2cf2029b57f",
+    "content-hash": "14c9cf04fe273e0208d6c2480161a3cc",
     "packages": [
+        {
+            "name": "mesingh/php-flash-messages",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DepreBot/PHP-Flash-Messages.git",
+                "reference": "9547a6df2ff2b6fe404fa6f366b2a05d3c8c3ded"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DepreBot/PHP-Flash-Messages/zipball/9547a6df2ff2b6fe404fa6f366b2a05d3c8c3ded",
+                "reference": "9547a6df2ff2b6fe404fa6f366b2a05d3c8c3ded",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "class.messages.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache"
+            ],
+            "authors": [
+                {
+                    "name": "Mandeep Singh",
+                    "email": "mandeep@websterfolks.com",
+                    "homepage": "http://www.msingh.me"
+                }
+            ],
+            "description": "Session-based Flash Messages class for PHP",
+            "homepage": "https://github.com/meSingh/PHP-Flash-Messages",
+            "keywords": [
+                "flash",
+                "messages",
+                "php-flash-messages",
+                "sessions"
+            ],
+            "time": "2013-10-26 21:07:12"
+        },
         {
             "name": "monolog/monolog",
             "version": "1.22.1",
@@ -386,7 +430,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "simotod/slim-download": 20
+        "simotod/slim-download": 20,
+        "mesingh/php-flash-messages": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

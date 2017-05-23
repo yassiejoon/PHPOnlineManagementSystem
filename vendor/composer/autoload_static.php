@@ -6,6 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInite51f88fb069e6ce1b9d859cc8e34ab51
 {
+    public static $files = array (
+        '4a5a6adf771ff3a3ceb109c0d85700a7' => __DIR__ . '/..' . '/mesingh/php-flash-messages/class.messages.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
