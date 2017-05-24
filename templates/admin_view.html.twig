@@ -1,0 +1,16 @@
+{# empty Twig template #}
+
+{% extends "admin_master.html.twig" %}
+
+{% block title %} View user file {% endblock %}
+
+{% block title_extra %} View user file {% endblock %}
+
+{% block content %}
+   
+    <form method="post">
+        Choose an userId: <input type="text" name="userId" value=""><br><br>
+        <input type="submit" value="Choose">
+    </form>    
+    
+{% endblock %}

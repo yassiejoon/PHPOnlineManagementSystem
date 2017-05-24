@@ -199,7 +199,12 @@ $app->post('/upload', function() use ($app) {
     }
     $errorList = array();
     $file = isset($_FILES['filename']) ? $_FILES['filename'] : array();
-    $target_dir = "uploads/";
+    $userId = $_SESSION['user']['userId'];
+    $target_dir = "uploads/" . $userId . "/";
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+    
     $target_file = $target_dir . $_FILES["filename"]["name"];
 
     if (!$file) {
@@ -214,7 +219,7 @@ $app->post('/upload', function() use ($app) {
                 array_push($errorList, "File name invalid");
             }
             // FIXME: do not allow file to override an previous upload
-            if (file_exists('uploads/' . $file['name'])) {
+            if (file_exists($target_dir . $file['name'])) {
                 array_push($errorList, "File name already exists. Will not override.");
             }
         }
@@ -355,7 +360,7 @@ $app->post('/download/:id', function($fileId) use ($app) {
     $app->render($filepath);
 });
 
-//Admin action: list, edit, delete, block, view
+//Admin action: list, edit, delete, block, and view
 //List
 $app->get('/admin/list', function() use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != "yes")) {
@@ -364,6 +369,28 @@ $app->get('/admin/list', function() use ($app) {
     }
     $userList = DB::query("SELECT * FROM users");
     $app->render('userlist.html.twig', array('userList' => $userList));
+});
+
+//View
+$app->get('/admin/view', function() use ($app) {
+    if (($_SESSION['user']['isAdmin'] != 'yes')) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+
+    $app->render('admin_view.html.twig');
+});
+
+$app->post('/admin/view', function() use ($app) {
+    if (($_SESSION['user']['isAdmin'] != 'yes')) {
+        $app->render('forbidden.html.twig');
+        return;
+    }
+
+    $userId = $app->request()->post('userId');
+
+    $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
+    $app->render('filelist.html.twig', array('fileList' => $fileList));
 });
 
 //Edit
