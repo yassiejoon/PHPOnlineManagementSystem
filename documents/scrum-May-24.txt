@@ -3,17 +3,20 @@ Date: May 24th, 2017
 
 Yas
 What did I do since last scrum:
-started coding style.css  
+adding multiple languages coding in php
 
 
 
 What will be done until the next scrum:
-finish password reset(continue)
+test multiple languages
+adding changes to online domain folder
+finish password reset
 
 
 
 Where do I need help / what do I need research.
 research on password reset 
+testing other languages
 
 
 
