@@ -56,8 +56,8 @@ $view->parserOptions = array(
 );
 $view->setTemplatesDirectory(dirname(__FILE__) . '/templates');
 
-$msg = new \Plasticbrain\FlashMessages\FlashMessages();
-/*
+/*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
+
   // Add a few messages
   $msg->info('This is an info message');
   $msg->success('This is a success message');
@@ -123,9 +123,9 @@ $app->post('/register', function() use ($app) {
     //
     if ($errorList) {
         $app->render('register.html.twig', array("errorList" => $errorList));
-        /* $msg = new \Plasticbrain\FlashMessages\FlashMessages();
-          $msg->error($errorList);
-          $msg->display(); */
+        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error($errorList);
+        $msg->display(); */
     } else {
         DB::insert('users', $valueList);
         $app->render('register_success.html.twig');
@@ -161,10 +161,10 @@ $app->post('/login', function() use ($app) {
     // decide what to render
     if ($error) {
         $app->render('login.html.twig', array("error" => $error));
-
-        /* $msg = new \Plasticbrain\FlashMessages\FlashMessages();
-          $msg->error('Login failed try again.');
-          $msg->display(); */
+        /*
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Login failed try again.');
+        $msg->display(); */
     } else {
         unset($user['password']);
         $_SESSION['user'] = $user;
@@ -189,7 +189,9 @@ $app->get('/upload', function() use ($app) {
         $app->render('forbidden.html.twig');
         return;
     }
-    $app->render('upload.html.twig');
+    $app->render('upload.html.twig',array(
+            "u" => $_SESSION['user']
+        ));
 });
 
 $app->post('/upload', function() use ($app) {
@@ -199,7 +201,7 @@ $app->post('/upload', function() use ($app) {
     }
     $errorList = array();
     $file = isset($_FILES['filename']) ? $_FILES['filename'] : array();
-    $userId = $_SESSION['user']['userId'];
+    $userId = $_SESSION['user']['id'];
     $target_dir = "uploads/" . $userId . "/";
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0777, true);
@@ -235,10 +237,11 @@ $app->post('/upload', function() use ($app) {
             "userId" => $_SESSION['user']['id'],
             "filename" => $file["name"],
             "modifiedDate" => date('Y-m-d H:i:s'),
-            "size" => $_FILES["filename"]["size"] / 1024
+            "size" => $_FILES["filename"]["size"] / 1024,
+            "path" => $target_dir
         ));
-        $app->render("upload_success.html.twig", array(
-            "filePath" => $target_file
+        $app->render("upload_success.html.twig",array(
+            "u" => $_SESSION['user']
         ));
     }
 });
@@ -251,7 +254,10 @@ $app->get('/list', function() use ($app) {
     }
     $userId = $_SESSION['user']['id'];
     $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
-    $app->render('filelist.html.twig', array('fileList' => $fileList));
+    $app->render('filelist.html.twig', array(
+            'u' => $_SESSION['user'],
+            'fileList' => $fileList
+    ));
 });
 
 //Rename
@@ -265,11 +271,13 @@ $app->get('/rename/:id', function($fileId) use ($app) {
     $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
     $filestr = implode(" ", $file);
-    if (!file_exists('uploads/' . $filestr)) {
+
+    if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
         $app->render('rename.html.twig', array("errorList" => $errorList));
     } else {
-        $app->render('rename.html.twig', array(
+        $app->render('rename.html.twig' ,array(
+            'u' => $_SESSION['user'],
             'f' => $fileList
         ));
     }
@@ -285,10 +293,14 @@ $app->post('/rename/:id', function($fileId) use ($app) {
         "filename" => $filename,
         "modifiedDate" => date('Y-m-d H:i:s'));
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $path = DB::queryFirstRow("SELECT path FROM files WHERE id=%i", $fileId);
     $filestr = implode(" ", $file);
-    if (rename('uploads/' . $filestr, 'uploads/' . $filename)) {
+    $pathstr = implode(" ", $path);
+    if (rename($pathstr. $filestr, $pathstr . $filename)) {
         DB::update('files', $fileList, "id = %i", $fileId);
-        $app->render("rename_success.html.twig");
+        $app->render("rename_success.html.twig", array(
+            "u" => $_SESSION['user']
+        ));
     }
 });
 
@@ -302,12 +314,13 @@ $app->get('/delete/:id', function($fileId) use ($app) {
     $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
     $filestr = implode(" ", $file);
-    if (!file_exists('uploads/' . $filestr)) {
+    if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
         $app->render('delete.html.twig', $errorList);
     }
 
     $app->render('delete.html.twig', array(
+        'u' => $_SESSION['user'],
         'f' => $fileList
     ));
 });
@@ -319,10 +332,13 @@ $app->post('/delete/:id', function($fileId) use ($app) {
         return;
     }
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $filestr = implode(" ", $file);
-    if (unlink('uploads/' . $filestr)) {
+    if (unlink($fileList['path'] . $filestr)) {
         DB::delete('files', "id = %i", $fileId);
-        $app->render("delete_success.html.twig");
+        $app->render("delete_success.html.twig",array(
+            "u" => $_SESSION['user']
+        ));
     }
 });
 
@@ -336,12 +352,13 @@ $app->get('/download/:id', function($fileId) use ($app) {
     $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
     $filestr = implode(" ", $file);
-    if (!file_exists('uploads/' . $filestr)) {
+    if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
         $app->render('download.html.twig', $errorList);
     }
 
     $app->render('download.html.twig', array(
+        'u' => $_SESSION['user'],
         'f' => $fileList
     ));
 });
@@ -353,9 +370,9 @@ $app->post('/download/:id', function($fileId) use ($app) {
     }
 
     $filename = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
+    $fileList = DB::queryFirstRow("SELECT * FROM files WHERE id=%i", $fileId);
     $file = implode(" ", $filename);
-
-    $filepath = 'uploads/' . $file;
+    $filepath = $fileList['path'] . $file;
     $app->view(new \SimoTod\SlimDownload\DownloadView());
     $app->render($filepath);
 });
