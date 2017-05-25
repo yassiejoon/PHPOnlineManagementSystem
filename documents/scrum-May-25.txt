@@ -1,0 +1,35 @@
+
+Date: May 25th, 2017 
+
+Yas
+What did I do since last scrum:
+continue coding multiple languages coding in php
+started coding password reset
+
+
+
+What will be done until the next scrum:
+resolve problems with multiple languages
+finish password reset
+
+
+
+Where do I need help / what do I need research.
+more research on password reset 
+more research other languages
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+admin can view user' file
+
+
+What will be done until the next scrum:
+build the template for main page(continue)
+user can create their own folder for upload file 
+
+
+Where do I need help / what do I need research.
+research on flash message
+
