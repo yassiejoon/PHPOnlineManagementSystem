@@ -1,0 +1,35 @@
+
+Date: May 26th, 2017 
+
+Yas
+What did I do since last scrum:
+coding  and debugging multiple languages coding in php
+finished coding password reset
+
+
+
+What will be done until the next scrum:
+testing multiple languages
+testing password reset
+continue on Powerpoint
+
+
+
+Where do I need help / what do I need research.
+research on similar software
+
+
+
+Wei
+What did I do/ did not do since last scrum:
+build the template for main page
+user can create their own folder for upload file 
+
+
+What will be done until the next scrum:
+use flash messageadmin 
+
+
+Where do I need help / what do I need research.
+research on flash messageadmin 
+
