@@ -13,55 +13,30 @@
         <script type="text/javascript" src="../homepage/js/image_slide.js"></script>
         {% block head %}
         {% endblock %}
-        <script type="text/javascript">
-            (function ($) {
-                $.fn.flash_message = function (options) {
 
-                    options = $.extend({
-                        text: 'Done',
-                        time: 1000,
-                        how: 'before',
-                        class_name: ''
-                    }, options);
-
-                    return $(this).each(function () {
-                        if ($(this).parent().find('.flash_message').get(0))
-                            return;
-
-                        var message = $('<span />', {
-                            'class': 'flash_message ' + options.class_name,
-                            text: options.text
-                        }).hide().fadeIn('fast');
-
-                        $(this)[options.how](message);
-
-                        message.delay(options.time).fadeOut('normal', function () {
-                            $(this).remove();
-                        });
-
-                    });
-                };
-            })(jQuery);
-            
-            window.onload=function(){
-                var a = document.getElementsByClassName("add-item");
-                a.onclick = function(){
-
-                $('#status-area').flash_message({
-                    text: 'Please logout first!',
-                    how: 'append'
-                });
+        <style>
+            .vertical-menu {
+                width: 140px; /* Set a width if you like */
+                border-radius: 10px
             }
-            }
-            /*
-            $('.add-item').click(function () {
 
-                $('#status-area').flash_message({
-                    text: 'Please logout first!',
-                    how: 'append'
-                });
-            });*/
-        </script>
+            .vertical-menu a {
+                background-color: #eee; /* Grey background color */
+                color: black; /* Black text color */
+                display: block; /* Make the links appear below each other */
+                padding: 15px; /* Add some padding */
+                text-decoration: none; /* Remove underline from links */
+            }
+
+            .vertical-menu a:hover {
+                background-color: #ccc; /* Dark grey background on mouse-over */
+            }
+
+            .vertical-menu a.active {
+                background-color: blue; /* Add a green color to the "active/current" link */
+                color: white;
+            }
+        </style>
     </head>
 
     <body>
@@ -69,10 +44,10 @@
             <div id="menubar">
                 <ul id="menu">
                     <li class="current"><a href="/list">Home</a></li>
-                    <li><a href="#">File</a></li>
-                    <li><a href="/register" class="add-item">Register</a></li>
-                    <li><a href="/login" class="add-item">Login</a></li>
+                    <li><a href="/logout" onclick="return confirm('You have to logout first.')" class="confirmation">Register</a></li>
+                    <li><a href="/logout" onclick="return confirm('You have to logout first.')" class="confirmation">Login</a></li>
                     <li><a href="/logout">Logout</a></li>
+                    <li><a href="/fr/list" style="float: right">FR</a></li>
                 </ul>
                 <img id="Logo" title="Logo" style="align-content: right" src="../homepage/images/logo.png" alt="" />
             </div><!--close menubar-->	
@@ -83,7 +58,20 @@
                     <div class="sidebar">
                         <div class="sidebar_item">
                             <h2 style="margin: 0 0 10px 0; font-size: 16px">Welcome, {{u.name}}</h2>
-                            <img style="display: block" src="../homepage/images/homepage.png" alt="homepage">
+                            <!--                            <img style="display: block" src="../homepage/images/homepage.png" alt="homepage">-->
+                            <div class="vertical-menu" style="border-radius: 10px">
+                                <a href="#" class="active">Home</a>
+                                <a href="#">Link 1</a>
+                                <a href="#">Link 2</a>
+                                <a href="#">Link 3</a>
+                                <a href="#">Link 4</a>
+                                <a href="#">Link 5</a>
+                                <a href="#">Link 6</a>
+                                <a href="#">Link 7</a>
+                                <a href="#">Link 8</a>
+                                <a href="#">Link 9</a>
+                                <a href="#">Link 10</a>
+                         </div>
                         </div><!--close sidebar_item--> 
                     </div><!--close sidebar-->     		
                 </div><!--close sidebar_container-->	
