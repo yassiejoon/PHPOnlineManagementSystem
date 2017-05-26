@@ -13,7 +13,55 @@
         <script type="text/javascript" src="../homepage/js/image_slide.js"></script>
         {% block head %}
         {% endblock %}
+        <script type="text/javascript">
+            (function ($) {
+                $.fn.flash_message = function (options) {
 
+                    options = $.extend({
+                        text: 'Done',
+                        time: 1000,
+                        how: 'before',
+                        class_name: ''
+                    }, options);
+
+                    return $(this).each(function () {
+                        if ($(this).parent().find('.flash_message').get(0))
+                            return;
+
+                        var message = $('<span />', {
+                            'class': 'flash_message ' + options.class_name,
+                            text: options.text
+                        }).hide().fadeIn('fast');
+
+                        $(this)[options.how](message);
+
+                        message.delay(options.time).fadeOut('normal', function () {
+                            $(this).remove();
+                        });
+
+                    });
+                };
+            })(jQuery);
+            
+            window.onload=function(){
+                var a = document.getElementsByClassName("add-item");
+                a.onclick = function(){
+
+                $('#status-area').flash_message({
+                    text: 'Please logout first!',
+                    how: 'append'
+                });
+            }
+            }
+            /*
+            $('.add-item').click(function () {
+
+                $('#status-area').flash_message({
+                    text: 'Please logout first!',
+                    how: 'append'
+                });
+            });*/
+        </script>
     </head>
 
     <body>
@@ -22,29 +70,29 @@
                 <ul id="menu">
                     <li class="current"><a href="/list">Home</a></li>
                     <li><a href="#">File</a></li>
-                    <li><a href="/register">Register</a></li>
-                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register" class="add-item">Register</a></li>
+                    <li><a href="/login" class="add-item">Login</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
-                    <img id="Logo" title="Logo" style="align-content: right" src="../homepage/images/logo.png" alt="" />
+                <img id="Logo" title="Logo" style="align-content: right" src="../homepage/images/logo.png" alt="" />
             </div><!--close menubar-->	
-
+            <div id="status-area"></div>
             <div id="site_content">		
 
                 <div class="sidebar_container">       
                     <div class="sidebar">
                         <div class="sidebar_item">
-                                <h2 style="margin: 0 0 10px 0; font-size: 16px">Welcome, {{u.name}}</h2>
+                            <h2 style="margin: 0 0 10px 0; font-size: 16px">Welcome, {{u.name}}</h2>
                             <img style="display: block" src="../homepage/images/homepage.png" alt="homepage">
                         </div><!--close sidebar_item--> 
                     </div><!--close sidebar-->     		
                 </div><!--close sidebar_container-->	
 
-                    {% block content %}
-                    {% endblock %}
+                {% block content %}
+                {% endblock %}
             </div><!--close site_content--> 
-      </div><!--close main-->
-  
+        </div><!--close main-->
+
 
         <!-- Footer -->
         <footer>

@@ -314,3 +314,8 @@ ul#menu li:hover a
     border-radius: 6px; 
     border:2px solid lightskyblue
 }
+
+#status-area .flash_message {
+    padding: 5px;
+    color: green;
+}

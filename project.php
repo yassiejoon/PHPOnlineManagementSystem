@@ -385,7 +385,10 @@ $app->get('/admin/list', function() use ($app) {
         return;
     }
     $userList = DB::query("SELECT * FROM users");
-    $app->render('userlist.html.twig', array('userList' => $userList));
+    $app->render('userlist.html.twig', array(
+        'u' => $_SESSION['user'],
+        'userList' => $userList
+    ));
 });
 
 //View
@@ -407,7 +410,10 @@ $app->post('/admin/view', function() use ($app) {
     $userId = $app->request()->post('userId');
 
     $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
-    $app->render('filelist.html.twig', array('fileList' => $fileList));
+    $app->render('filelist.html.twig',array(
+        'u' => $_SESSION['user'],
+        'fileList' => $fileList
+    ));
 });
 
 //Edit
@@ -417,9 +423,7 @@ $app->get('/admin/edit/:id', function($userId) use ($app) {
         return;
     }
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId); 
-    $app->render('admin_edit.html.twig', array(
-        'u' => $user
-    ));
+    $app->render('admin_edit.html.twig');
 });
 
 $app->post('/admin/edit/:id', function($userId) use ($app) {
@@ -444,7 +448,7 @@ $app->get('/admin/block/:id', function($userId) use ($app) {
     }
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
     $app->render('admin_block.html.twig', array(
-        'u' => $user
+        'user' => $user
     ));
 });
 
