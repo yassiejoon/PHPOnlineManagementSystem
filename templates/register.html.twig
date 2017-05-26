@@ -5,53 +5,29 @@
 
 {% block headExtra %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#emailInUse").hide();
-            $("input[name=email]").keyup(function () {
-                var email = $(this).val();
-                //console.log("Keyup: "+ email);
-                if (email === "") {
-                    $("#emailInUse").hide();
-                    return;
-                }
-                $.get("/ajax/emailused/" + email, function (result) {
-                    result = eval(result);
-                    if (result) {
-                        $("#emailInUse").show();
-                    } else {
-                        $("#emailInUse").hide();
-                    }
-                });
-            });
-        });
-    </script>
-
 {% endblock %}
 
 {% block content %}
-
-    {% if errorList %}
-        <ul class="errorList">
-            {% for error in errorList %}
-                <li> {{ error }} </li>
+    <div style="width: 530px; margin: auto; margin-top: 20px; background-color: blue; border-radius: 10px">
+        {% if errorList %}
+            <ul class="errorList" style="color:red; font-size: 20px; font-weight: bold">
+                {% for error in errorList %}
+                    <li> {{ error }} </li>
                 {% endfor %}
-        </ul>
-    {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+
 
     <!-- Top content -->
     <div class="top-content">
-
         <div class="inner-bg">
             <div class="container">
-
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3 text">
                         <h1 style="font-weight: bold; color: lightskyblue">
                             Register Form
                         </h1>
-
                     </div>
                 </div>
 
@@ -68,14 +44,14 @@
                             </div>
                         </div>
                         <div class="form-bottom">
-                            <form role="form" action="" method="post" class="registration-form">
+                            <form role="form" method="post" class="registration-form">
                                 <div class="form-group">
                                     <label class="sr-only" for="form-first-name">User name</label>
                                     <input type="text" name="name" placeholder="User name..." class="form-first-name form-control" id="form-first-name">
                                 </div>
                                 <div class="form-group">
                                     <label class="sr-only" for="form-email">Email</label>
-                                    <input type="text" name="email" placeholder="Email..." class="form-email form-control" id="form-email">
+                                    <input type="email" name="email" style="height: 50px; font-size: 16px; padding-left: 22px" placeholder="Email..." class="form-email form-control" id="form-email">
                                 </div>
                                 <div class="form-group">
                                     <label class="sr-only" for="form-email">Password</label>
@@ -85,9 +61,8 @@
                                     <label class="sr-only" for="form-email">Confirm Password</label>
                                     <input type="password" name="pass2" placeholder="Confirm Password..." class="form-email form-control" id="form-email">
                                 </div>
-                                <button type="submit" class="btn">Sign me up!</button>
+                                <input type="submit" class="btn" style="height: 50px; width: 490px; margin: auto; font-size: 20px; background-color: lightskyblue" value="Sign me up!">
                             </form>
-
                         </div>
                     </div>
 
@@ -99,13 +74,10 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>
 
 

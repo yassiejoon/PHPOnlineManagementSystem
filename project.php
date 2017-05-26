@@ -97,7 +97,8 @@ $app->post('/register', function() use ($app) {
         'email' => $email,
         'password' => $pass1,
         'name' => $name,
-        'isAdmin' => 'no'
+        'isAdmin' => 'no',
+        'isActive' => 'yes'
     );
     // check for errors and collect error messages
     $errorList = array();
@@ -122,8 +123,10 @@ $app->post('/register', function() use ($app) {
     }
     //
     if ($errorList) {
-        $app->render('register.html.twig', array("errorList" => $errorList));
-        /*$msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $app->render('register.html.twig', array(
+            "errorList" => $errorList
+        ));
+        /*  $msg = new \Plasticbrain\FlashMessages\FlashMessages();
         $msg->error($errorList);
         $msg->display(); */
     } else {
@@ -131,14 +134,14 @@ $app->post('/register', function() use ($app) {
         $app->render('register_success.html.twig');
     }
 });
-
+/*
 // AJAX: Is user with this email already registered?
 $app->get('/ajax/emailused/:email', function($email) {
     $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
     //echo json_encode($user, JSON_PRETTY_PRINT);
     echo json_encode($user != null);
 });
-
+*/
 
 // Login
 $app->get('/login', function() use ($app) {
