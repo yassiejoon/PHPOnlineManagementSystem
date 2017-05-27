@@ -15,28 +15,70 @@
         {% endblock %}
 
         <style>
-            .vertical-menu {
-                width: 140px; /* Set a width if you like */
-                border-radius: 10px
+            html, body {
+                font-family: Arial, Helvetica, sans-serif;
             }
 
-            .vertical-menu a {
-                background-color: #eee; /* Grey background color */
-                color: black; /* Black text color */
-                display: block; /* Make the links appear below each other */
-                padding: 15px; /* Add some padding */
-                text-decoration: none; /* Remove underline from links */
+            /* define a fixed width for the entire menu */
+            .navigation {
+                width: 140px;
             }
 
-            .vertical-menu a:hover {
-                background-color: #ccc; /* Dark grey background on mouse-over */
+            /* reset our lists to remove bullet points and padding */
+            .mainmenu, .submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
             }
 
-            .vertical-menu a.active {
-                background-color: blue; /* Add a green color to the "active/current" link */
+            /* make ALL links (main and submenu) have padding and background color */
+            .mainmenu a {
+                display: block;
+                background-color:#0043a8;
+                text-decoration: none;
+                padding: 10px;
                 color: white;
             }
-        </style>
+
+            /* add hover behaviour */
+            .mainmenu a:hover {
+                background-color: lightskyblue;
+            }
+
+
+            /* when hovering over a .mainmenu item,
+              display the submenu inside it.
+              we're changing the submenu's max-height from 0 to 200px;
+            */
+
+            .mainmenu li:hover .submenu {
+                display: block;
+                max-height: 300px;
+            }
+
+            /*
+              we now overwrite the background-color for .submenu links only.
+              CSS reads down the page, so code at the bottom will overwrite the code at the top.
+            */
+
+            .submenu a {
+                background-color: silver;
+                color: black;
+            }
+
+            /* hover behaviour for links inside .submenu */
+            .submenu a:hover {
+                background-color: #666;
+            }
+
+            /* this is the initial state of all submenus.
+              we set it to max-height: 0, and hide the overflowed content.
+            */
+            .submenu {
+                overflow: hidden;
+                max-height: 0;
+                -webkit-transition: all 0.5s ease-out;
+            }       </style>
     </head>
 
     <body>
@@ -59,19 +101,24 @@
                         <div class="sidebar_item">
                             <h2 style="margin: 0 0 10px 0; font-size: 16px">Welcome, {{u.name}}</h2>
                             <!--                            <img style="display: block" src="../homepage/images/homepage.png" alt="homepage">-->
-                            <div class="vertical-menu" style="border-radius: 10px">
-                                <a href="#" class="active">Home</a>
-                                <a href="#">Link 1</a>
-                                <a href="#">Link 2</a>
-                                <a href="#">Link 3</a>
-                                <a href="#">Link 4</a>
-                                <a href="#">Link 5</a>
-                                <a href="#">Link 6</a>
-                                <a href="#">Link 7</a>
-                                <a href="#">Link 8</a>
-                                <a href="#">Link 9</a>
-                                <a href="#">Link 10</a>
-                         </div>
+                            <nav class="navigation">
+                                <ul class="mainmenu">
+                                    <li><a href="">MY WORKSPACE</a>
+                                        <ul class="submenu">
+                                            <li><a href="">Activity Stream</a></li>
+                                            <li><a href="">Tasks</a></li>
+                                            <li><a href="">Calendar</a></li>
+                                            <li><a href="">Files</a></li>
+                                            <li><a href="">Photos</a></li>
+                                            <li><a href="">Conversation</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="">WORKGROUPS</a></li>
+                                    <li><a href="">CRM</a></li>
+                                    <li><a href="">COMPANY</a></li>
+                                    <li><a href="">SETTINGS</a></li>
+                                </ul>
+                            </nav>
                         </div><!--close sidebar_item--> 
                     </div><!--close sidebar-->     		
                 </div><!--close sidebar_container-->	
