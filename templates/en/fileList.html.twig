@@ -1,5 +1,5 @@
 {# empty Twig template #}
-{% extends "master.html.twig" %}
+{% extends "en/master.html.twig" %}
 
 {% block title %} File List {% endblock %}
 
@@ -35,9 +35,9 @@
                     <div class="psdg-right" style="width:20%">{{f.modifiedDate}}</div>
                     <div class="psdg-right" style="width:10%">{{f.size}}</div>
                     <div class="psdg-right" style="width:35%">
-                        <a href="/rename/{{f.id}}" class="psdg-button1" style="float:left">Rename</a>
-                        <a href="/delete/{{f.id}}" class="psdg-button1" style="float:left">Delete</a>
-                        <a href="/download/{{f.id}}" class="psdg-button1" style="float:left">Download</a>
+                        <a href="/en/rename/{{f.id}}" class="psdg-button1" style="float:left">Rename</a>
+                        <a href="/en/delete/{{f.id}}" class="psdg-button1" style="float:left">Delete</a>
+                        <a href="/en/download/{{f.id}}" class="psdg-button1" style="float:left">Download</a>
                     </div>
 
                 {% endfor %}

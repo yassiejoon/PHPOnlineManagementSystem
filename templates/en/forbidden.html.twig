@@ -1,15 +1,15 @@
 {# empty Twig template #}
-{% extends "master.html.twig" %}
+{% extends "en/master.html.twig" %}
 
 {% block title %} Forbidden Operation{% endblock %}
 
 {% block head %}
-    <meta http-equiv="refresh" content="5;url=/list" />
+    <meta http-equiv="refresh" content="5;url=/en/list" />
     
     <script>
         $(document).ready(function () {
             window.setTimeout(function () {
-                location.href = "/list";
+                location.href = "/en/list";
             }, 5000);
         });
     </script> 
@@ -19,7 +19,7 @@
     <div id="bground" class="">
         <div id="bground-header">
             <a style="font-size: 28px; color: red; font-weight: bold">Forbidden Operation.</a><br>
-            <a href="/list" style="color: red; font-size: 16px; text-decoration: underline">
+            <a href="/en/list" style="color: red; font-size: 16px; text-decoration: underline">
                 Click to list
             </a>
             <a style="color: red; font-size: 16px">or you will be redirected in 5 seconds.</a>

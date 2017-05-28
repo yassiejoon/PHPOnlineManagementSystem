@@ -1,6 +1,6 @@
 {# empty Twig template #}
 
-{% extends "master.html.twig" %}
+{% extends "en/master.html.twig" %}
 
 {% block title %} User List {% endblock %}
 
@@ -8,10 +8,10 @@
     <div id="content">
         <div id="psdgraphics-com-table">
             <div id="psdg-header">
-                <a href="/admin/view" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
+                <a href="/en/admin/view" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
                     View User
                 </a>
-                <a href="/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
+                <a href="/en/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
                     File List
                 </a>
             </div>
@@ -37,9 +37,9 @@
                     <div class="psdg-right" style="width:7%">{{u.isAdmin}}</div>
                     <div class="psdg-right" style="width:7%">{{u.isActive}}</div>
                     <div class="psdg-right" style="width:30%">
-                        <a href="/admin/edit/{{u.id}}" class="psdg-button2" style="float:left">edit</a>
-                        <a href="/admin/delete/{{u.id}}" class="psdg-button2" style="float:left">delete</a>
-                        <a href="/admin/block/{{u.id}}" class="psdg-button2" style="float:left">block</a>
+                        <a href="/en/admin/edit/{{u.id}}" class="psdg-button2" style="float:left">edit</a>
+                        <a href="/en/admin/delete/{{u.id}}" class="psdg-button2" style="float:left">delete</a>
+                        <a href="/en/admin/block/{{u.id}}" class="psdg-button2" style="float:left">block</a>
                     </div>
 
                 {% endfor %}

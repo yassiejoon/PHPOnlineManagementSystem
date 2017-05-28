@@ -74,19 +74,22 @@ if (!isset($_SESSION['user'])) {
 $twig = $app->view()->getEnvironment();
 $twig->addGlobal('user', $_SESSION['user']);
 
+\Slim\Route::setDefaultConditions(array(
+    'lang' => '(en|fr)'
+));
 
-$app->get('/', function() use ($app) {
-    $app->render('register.html.twig');
+$app->get('(/:lang)/', function($lang = 'en') use ($app) {
+    $app->render($lang . '/register.html.twig');
 });
 
 // Login, Logout, and Register
 // Register
-$app->get('/register', function() use ($app) {
-    $app->render('register.html.twig');
+$app->get('(/:lang)/register', function($lang = 'en') use ($app) {
+    $app->render($lang . '/register.html.twig');
 });
 
 // Receiving a submission
-$app->post('/register', function() use ($app) {
+$app->post('(/:lang)/register', function($lang = 'en') use ($app) {
     // extract variables
     $email = $app->request()->post('email');
     $pass1 = $app->request()->post('pass1');
@@ -123,7 +126,7 @@ $app->post('/register', function() use ($app) {
     }
     //
     if ($errorList) {
-        $app->render('register.html.twig', array(
+        $app->render($lang . '/register.html.twig', array(
             "errorList" => $errorList
         ));
         /*  $msg = new \Plasticbrain\FlashMessages\FlashMessages();
@@ -131,7 +134,7 @@ $app->post('/register', function() use ($app) {
         $msg->display(); */
     } else {
         DB::insert('users', $valueList);
-        $app->render('register_success.html.twig');
+        $app->render($lang . '/register_success.html.twig');
     }
 });
 /*
@@ -144,11 +147,11 @@ $app->get('/ajax/emailused/:email', function($email) {
 */
 
 // Login
-$app->get('/login', function() use ($app) {
-    $app->render('login.html.twig');
+$app->get('(/:lang)/login', function($lang = 'en') use ($app) {
+    $app->render($lang . '/login.html.twig');
 });
 
-$app->post('/login', function() use ($app) {
+$app->post('(/:lang)/login', function($lang = 'en') use ($app) {
     $email = $app->request()->post('email');
     $pass = $app->request()->post('pass');
     // verification    
@@ -163,7 +166,7 @@ $app->post('/login', function() use ($app) {
     }
     // decide what to render
     if ($error) {
-        $app->render('login.html.twig', array("error" => $error));
+        $app->render($lang . '/login.html.twig', array("error" => $error));
         /*
         $msg = new \Plasticbrain\FlashMessages\FlashMessages();
         $msg->error('Login failed try again.');
@@ -172,34 +175,142 @@ $app->post('/login', function() use ($app) {
         unset($user['password']);
         $_SESSION['user'] = $user;
         if($user['isActive'] == 'no'){
-            $app->render('block.html.twig');
+            $app->render($lang . '/block.html.twig');
         }else{
-        $app->render('login_success.html.twig');
+        $app->render($lang . '/login_success.html.twig');
         }
     }
 });
+// PASSWORD RESET
+
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+$app->map('/passreset', function () use ($app, $log) {
+    // Alternative to cron-scheduled cleanup
+
+    if ($app->request()->isGet()) {
+        $app->render($lang . '/passreset.html.twig');
+    } else {
+        $email = $app->request()->post('email');
+        $user = DB::queryFirstRow("SELECT * FROM users WHERE email=%s", $email);
+        if ($user) {
+            $app->render($lang . '/passreset_success.html.twig');
+            $secretToken = generateRandomString(50);
+
+            // insert-update 
+            DB::insertUpdate('/passresets', array(
+                'userID' => $user['ID'],
+                'secretToken' => $secretToken,
+                'expiryDateTime' => date("Y-m-d H:i:s", strtotime("+5 minutes"))
+            ));
+            // email user
+            $url = 'http://' . $_SERVER['SERVER_NAME'] . '(/:lang)/passreset/' . $secretToken;
+            $html = $app->view()->render($lang . '/email_passreset.html.twig', array(
+                'name' => $user['name'],
+                'url' => $url
+            ));
+            $headers = "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "From: Noreply <noreply@ipd8.info>\r\n";
+            $headers .= "To: " . htmlentities($user['name']) . " <" . $email . ">\r\n";
+
+            mail($email, "Password reset from SlimShop", $html, $headers);
+            $log->info("Password reset for $email email sent");
+        } else {
+            $app->render($lang . '/passreset.html.twig', array('error' => TRUE));
+        }
+    }
+})->via('GET', 'POST');
+
+$app->map('/passreset/:secretToken', function($secretToken) use ($app) {
+    $row = DB::queryFirstRow("SELECT * FROM passresets WHERE secretToken=%s", $secretToken);
+    if (!$row) {
+        $app->render($lang . '/passreset_notfound_expired.html.twig');
+        return;
+    }
+    if (strtotime($row['expiryDateTime']) < time()) {
+        $app->render($lang . '/passreset_notfound_expired.html.twig');
+        return;
+    }
+    //
+    if ($app->request()->isGet()) {
+        $app->render($lang . '/passreset_form.html.twig');
+    } else {
+        $pass1 = $app->request()->post('pass1');
+        $pass2 = $app->request()->post('pass2');
+        //  verify password quality and that pass1 matches pass2
+        $errorList = array();
+        $msg = verifyPassword($pass1);
+        if ($msg !== TRUE) {
+            array_push($errorList, $msg);
+        } else if ($pass1 != $pass2) {
+            array_push($errorList, "Passwords don't match");
+        }
+        //
+        if ($errorList) {
+            $app->render($lang . '/passreset_form.html.twig', array(
+                'errorList' => $errorList
+            ));
+        } else {
+            // success - reset the password
+            DB::update('users', array(
+                'password' => password_hash($pass1, CRYPT_BLOWFISH)
+                    ), "ID=%d", $row['userID']);
+            DB::delete('passresets', 'secretToken=%s', $secretToken);
+            $app->render($lang . '/passreset_form_success.html.twig');
+            $log->info("Password reset completed for " . $row['email'] . " uid=" . $row['userID']);
+        }
+    }
+})->via('GET', 'POST');
+
+
+$app->get('(/:lang)/scheduled/daily', function($lang = 'en') use ($app, $log) {
+    DB::$error_handler = FALSE;
+    DB::$throw_exception_on_error = TRUE;
+    // PLACE THE ORDER
+    // clean up old password reset requests
+    try {
+        DB::delete('passresets', "expiryDateTime < NOW()");
+        $log->debug("Password resets clean up, removed " . DB::affectedRows());
+    } catch (MeekroDBException $e) {
+        sql_error_handler(array(
+            'error' => $e->getMessage(),
+            'query' => $e->getQuery()
+        ));
+    }
+
+    echo "Completed";
+});
 
 //Logout
-$app->get('/logout', function() use ($app) {
+$app->get('(/:lang)/logout', function($lang = 'en') use ($app) {
     unset($_SESSION['user']);
-    $app->render('logout.html.twig');
+    $app->render($lang . '/logout.html.twig');
 });
 
 //User action: upload, list, rename, download and delete
 //Upload
-$app->get('/upload', function() use ($app) {
+$app->get('(/:lang)/upload', function($lang = 'en') use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
-    $app->render('upload.html.twig',array(
+    $app->render($lang .'/upload.html.twig',array(
             "u" => $_SESSION['user']
         ));
 });
 
-$app->post('/upload', function() use ($app) {
+$app->post('(/:lang)/upload', function($lang = 'en') use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $errorList = array();
@@ -230,7 +341,7 @@ $app->post('/upload', function() use ($app) {
         }
     }
     if ($errorList) {
-        $app->render("upload.html.twig", array(
+        $app->render($lang . "/upload.html.twig", array(
             "errorList" => $errorList
         ));
     } else {
@@ -243,30 +354,30 @@ $app->post('/upload', function() use ($app) {
             "size" => $_FILES["filename"]["size"] / 1024,
             "path" => $target_dir
         ));
-        $app->render("upload_success.html.twig",array(
+        $app->render($lang . "/upload_success.html.twig",array(
             "u" => $_SESSION['user']
         ));
     }
 });
 
 //List
-$app->get('/list', function() use ($app) {
+$app->get('(/:lang)/list', function($lang = 'en') use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('please_login.html.twig');
+        $app->render($lang . '/please_login.html.twig');
         return;
     }
     $userId = $_SESSION['user']['id'];
     $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
-    $app->render('filelist.html.twig', array(
+    $app->render($lang . '/filelist.html.twig', array(
             'u' => $_SESSION['user'],
             'fileList' => $fileList
     ));
 });
 
 //Rename
-$app->get('/rename/:id', function($fileId) use ($app) {
+$app->get('(/:lang)/rename/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
@@ -277,18 +388,18 @@ $app->get('/rename/:id', function($fileId) use ($app) {
 
     if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
-        $app->render('rename.html.twig', array("errorList" => $errorList));
+        $app->render($lang . '/rename.html.twig', array("errorList" => $errorList));
     } else {
-        $app->render('rename.html.twig' ,array(
+        $app->render($lang . '/rename.html.twig' ,array(
             'u' => $_SESSION['user'],
             'f' => $fileList
         ));
     }
 });
 
-$app->post('/rename/:id', function($fileId) use ($app) {
+$app->post('(/:lang)/rename/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $filename = $app->request()->post('filename');
@@ -301,16 +412,16 @@ $app->post('/rename/:id', function($fileId) use ($app) {
     $pathstr = implode(" ", $path);
     if (rename($pathstr. $filestr, $pathstr . $filename)) {
         DB::update('files', $fileList, "id = %i", $fileId);
-        $app->render("rename_success.html.twig", array(
+        $app->render($lang . "/rename_success.html.twig", array(
             "u" => $_SESSION['user']
         ));
     }
 });
 
 //Delete
-$app->get('/delete/:id', function($fileId) use ($app) {
+$app->get('(/:lang)/delete/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $errorList = array();
@@ -319,19 +430,19 @@ $app->get('/delete/:id', function($fileId) use ($app) {
     $filestr = implode(" ", $file);
     if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
-        $app->render('delete.html.twig', $errorList);
+        $app->render($lang . '/delete.html.twig', $errorList);
     }
 
-    $app->render('delete.html.twig', array(
+    $app->render($lang . '/delete.html.twig', array(
         'u' => $_SESSION['user'],
         'f' => $fileList
     ));
 });
 
 
-$app->post('/delete/:id', function($fileId) use ($app) {
+$app->post('(/:lang)/delete/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $file = DB::queryFirstRow("SELECT filename FROM files WHERE id=%i", $fileId);
@@ -339,16 +450,16 @@ $app->post('/delete/:id', function($fileId) use ($app) {
     $filestr = implode(" ", $file);
     if (unlink($fileList['path'] . $filestr)) {
         DB::delete('files', "id = %i", $fileId);
-        $app->render("delete_success.html.twig",array(
+        $app->render($lang . "/delete_success.html.twig",array(
             "u" => $_SESSION['user']
         ));
     }
 });
 
 //Download
-$app->get('/download/:id', function($fileId) use ($app) {
+$app->get('(/:lang)/download/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $errorList = array();
@@ -357,18 +468,18 @@ $app->get('/download/:id', function($fileId) use ($app) {
     $filestr = implode(" ", $file);
     if (!file_exists($fileList['path'] . $filestr)) {
         array_push($errorList, "File is not exist.");
-        $app->render('download.html.twig', $errorList);
+        $app->render($lang . '/download.html.twig', $errorList);
     }
 
-    $app->render('download.html.twig', array(
+    $app->render($lang . '/download.html.twig', array(
         'u' => $_SESSION['user'],
         'f' => $fileList
     ));
 });
 
-$app->post('/download/:id', function($fileId) use ($app) {
+$app->post('(/:lang)/download/:id', function($lang = 'en', $fileId) use ($app) {
     if (!$_SESSION['user']&&($_SESSION['user']['isAdmin']!="yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
@@ -382,82 +493,82 @@ $app->post('/download/:id', function($fileId) use ($app) {
 
 //Admin action: list, edit, delete, block, and view
 //List
-$app->get('/admin/list', function() use ($app) {
+$app->get('(/:lang)/admin/list', function($lang = 'en') use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != "yes")) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $userList = DB::query("SELECT * FROM users");
-    $app->render('userlist.html.twig', array(
+    $app->render($lang . '/userlist.html.twig', array(
         'u' => $_SESSION['user'],
         'userList' => $userList
     ));
 });
 
 //View
-$app->get('/admin/view', function() use ($app) {
+$app->get('(/:lang)/admin/view', function($lang = 'en') use ($app) {
     if (($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
-    $app->render('admin_view.html.twig');
+    $app->render($lang . '/admin_view.html.twig');
 });
 
-$app->post('/admin/view', function() use ($app) {
+$app->post('(/:lang)/admin/view', function($lang = 'en') use ($app) {
     if (($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
     $userId = $app->request()->post('userId');
 
     $fileList = DB::query("SELECT * FROM files WHERE userId=%i", $userId);
-    $app->render('filelist.html.twig',array(
+    $app->render($lang . '/filelist.html.twig',array(
         'u' => $_SESSION['user'],
         'fileList' => $fileList
     ));
 });
 
 //Edit
-$app->get('/admin/edit/:id', function($userId) use ($app) {
+$app->get('(/:lang)/admin/edit/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId); 
-    $app->render('admin_edit.html.twig');
+    $app->render($lang . '/admin_edit.html.twig');
 });
 
-$app->post('/admin/edit/:id', function($userId) use ($app) {
+$app->post('(/:lang)/admin/edit/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
     $isAdmin = $app->request()->post('isAdmin') ? 'yes' : 'no';
     $userList = array(
-        "isAdmin" => $isAdmin,
+        "isAdmin" => $isAdmin
     );
 
     DB::update('users', $userList, "id = %i", $userId);
-    $app->render("admin_edit_success.html.twig");
+    $app->render($lang . "/admin_edit_success.html.twig");
 });
 //Block
-$app->get('/admin/block/:id', function($userId) use ($app) {
+$app->get('(/:lang)/admin/block/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
-    $app->render('admin_block.html.twig', array(
+    $app->render($lang . '/admin_block.html.twig', array(
         'user' => $user
     ));
 });
 
-$app->post('/admin/block/:id', function($userId) use ($app) {
+$app->post('(/:lang)/admin/block/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
 
@@ -467,29 +578,29 @@ $app->post('/admin/block/:id', function($userId) use ($app) {
     );
 
     DB::update('users', $userList, "id = %i", $userId);
-    $app->render("admin_block_success.html.twig");
+    $app->render($lang . "/admin_block_success.html.twig");
 });
 
 
 //Delete
-$app->get('/admin/delete/:id', function($userId) use ($app) {
+$app->get('(/:lang)/admin/delete/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     $user = DB::queryFirstRow("SELECT * FROM users WHERE id=%i", $userId);
-    $app->render('admin_delete.html.twig', array(
+    $app->render($lang . '/admin_delete.html.twig', array(
         'u' => $user
     ));
 });
 
-$app->post('/admin/delete/:id', function($userId) use ($app) {
+$app->post('(/:lang)/admin/delete/:id', function($lang = 'en', $userId) use ($app) {
     if ((!$_SESSION['user']) || ($_SESSION['user']['isAdmin'] != 'yes')) {
-        $app->render('forbidden.html.twig');
+        $app->render($lang . '/forbidden.html.twig');
         return;
     }
     DB::delete('users', "id = %i", $userId);
-    $app->render("admin_delete_success.html.twig");
+    $app->render($lang . "/admin_delete_success.html.twig");
 });
 
 
