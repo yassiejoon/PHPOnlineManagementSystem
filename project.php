@@ -22,7 +22,7 @@ require_once 'local.php';
   DB::$user = 'cp4776_ofms_wy ';
   DB::$password = 'Jg56AhAeGpmPa0ye';
   DB::$dbName = 'cp4776_ofms';
- */
+*/
 
 DB::$error_handler = 'sql_error_handler';
 DB::$nonsql_error_handler = 'nonsql_error_handler';

@@ -1,0 +1,37 @@
+{# empty Twig template #}
+{% extends "fr/master.html.twig" %}
+
+{% block title %} Supprimer le fichier {% endblock %}
+
+{% block content %}
+    <div id="bground" class="">
+        <div id="bground-header">
+            <a style="font-size: 20px; color: black; font-weight: bold">Supprimer</a><br>
+            <a href="/fr/list" class="bground-button" style="float:right; margin-right: 20px; margin-top: 0px">
+                Liste des Fichiers
+            </a>
+        </div>
+        <div id="bground-middle">
+            {% if errorList %}
+                <ul class="errorList" style="font-size: 15px; color: red; text-align: left">
+                    {% for error in errorList %}
+                        <li> {{ error }} </li>
+                        {% endfor %}
+                </ul>
+            {% endif %}
+            <br>
+            <p style="font-size: 15px"> Are you sure you want to delete this file?</p>
+            <form style="display: inline-block" action="/fr/list" style="font-size: 15px; text-align: center">
+                <input type="submit" value="Annuler" style="font-size: 15px"></form>
+            <form style="display: inline-block" method="post" style="font-size: 15px; text-align: center">
+                <input type="hidden" name="delete" value="Confirmé" style="font-size: 15px"><br><br>
+                <input type="submit" value="Oui, Suprimmez!" style="font-size: 15px">
+            </form><br><br>
+            <p style="font-size: 15px">
+                {{f.filename}} / size(KB) : {{f.size}} / modifiée à {{f.modifiedDate}}
+            </p>
+            <br>
+        </div>
+    </div>
+
+{% endblock %}

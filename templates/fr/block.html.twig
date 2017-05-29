@@ -1,0 +1,28 @@
+{# empty Twig template #}
+{% extends "fr/master.html.twig" %}
+
+{% block title %}Block Info{% endblock %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="5;url=/fr/login" />
+    
+    <script>
+        $(document).ready(function () {
+            window.setTimeout(function () {
+                location.href = "/fr/login";
+            }, 5000);
+        });
+    </script> 
+{% endblock %}
+
+{% block content %}
+    <div id="bground" class="">
+        <div id="bground-header">
+            <a style="font-size: 28px; color: red; font-weight: bold">Your account is block.</a><br>
+            <a href="/fr/login" style="color: red; font-size: 16px; text-decoration: underline">
+                Click to login
+            </a>
+            <a style="color: red; font-size: 16px">or you will be redirected in 5 seconds.</a>
+        </div>
+    </div>
+{% endblock %}

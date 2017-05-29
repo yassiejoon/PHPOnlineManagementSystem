@@ -1,0 +1,31 @@
+{# empty Twig template #}
+{% extends "fr/master.html.twig" %}
+
+{% block title %} Renommer fichier {% endblock %}
+
+{% block content %}
+
+    <div id="bground" class="">
+        <div id="bground-header">
+            <a style="font-size: 20px; color: black; font-weight: bold">Renommer</a><br>
+            <a href="/list" class="bground-button" style="float:right; margin-right: 20px; margin-top: 0px">
+                Liste des fichiers
+            </a>
+        </div>
+        <div id="bground-middle" style="font-size: 15px; text-align: center">
+            {% if errorList %}
+                <ul class="errorList" style="color: red; text-align: left">
+                    {% for error in errorList %}
+                        <li> {{ error }} </li>
+                        {% endfor %}
+                </ul>
+            {% endif %}
+            <br>
+            <form method="post">
+                Nome de Fichier: <input type="text" name="filename" value="{{f.filename}}"><br><br>
+                <input type="submit" value="Rename File" style="font-size: 15px">
+            </form>    
+                <br>
+        </div>
+    </div>
+{% endblock %}

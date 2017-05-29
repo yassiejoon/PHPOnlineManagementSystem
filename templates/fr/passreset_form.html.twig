@@ -1,0 +1,26 @@
+{% extends "fr/page.html.twig" %}
+
+{% block title %}Réinitialisation de mot de passe{% endblock %}
+
+{% block content %}
+            
+<h1>Réinitialisation de mot de passe</h1>
+
+{% if errorList %}
+    <ul>
+    {% for error in errorList %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Entrez votre nouveau mot de passe ci-dessous.</p>
+
+<form method="post">
+
+    Password: <input type="password" name="pass1"><br>
+    Password (repeated) <input type="password" name="pass2"><br>
+    <input type="submit" value="Reset password">
+</form>
+
+{% endblock %}

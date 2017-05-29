@@ -1,0 +1,17 @@
+{% extends "fr/admin_master.html.twig" %}
+
+{% block title %} Edit de l’utilisateur {% endblock %}
+
+{% block title_extra %} Edit de l’utilisateur {% endblock %}
+
+{% block content %}
+   
+    <form method="post">
+        Changer à l’Admin ?<input type="checkbox" name="isAdmin" value="checked"
+                    {% if u.isAdmin == 'yes' %}checked{% endif %}
+                    ><br><br>
+        <input type="submit" value="Change">
+    </form>    
+    
+{% endblock %}
+

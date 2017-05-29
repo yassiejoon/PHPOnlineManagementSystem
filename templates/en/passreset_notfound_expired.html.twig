@@ -1,0 +1,14 @@
+{% extends "en/page.html.twig" %}
+
+{% block title %}Failed reset{% endblock %}
+
+{% block content %}
+    
+<h1>Failed reset</h1>
+
+<p>Password reset token does not exist or has expired.</p>
+<p>You may <a href="/lang/passreset">request a new token</a>.</p>
+
+<a href="/">Click to continue</a>
+
+{% endblock %}

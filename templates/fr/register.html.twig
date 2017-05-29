@@ -1,0 +1,112 @@
+{# empty Twig template #}
+{% extends "fr/page.html.twig" %}
+
+{% block title %} Enregistrement de l’utilisateur {% endblock %}
+
+{% block headExtra %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#emailInUse").hide();
+            $("input[name=email]").keyup(function () {
+                var email = $(this).val();
+                //console.log("Keyup: "+ email);
+                if (email === "") {
+                    $("#emailInUse").hide();
+                    return;
+                }
+                $.get("/ajax/emailused/" + email, function (result) {
+                    result = eval(result);
+                    if (result) {
+                        $("#emailInUse").show();
+                    } else {
+                        $("#emailInUse").hide();
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    {% if errorList %}
+        <ul class="errorList">
+            {% for error in errorList %}
+                <li> {{ error }} </li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Top content -->
+    <div class="top-content">
+
+        <div class="inner-bg">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 text">
+                        <h1 style="font-weight: bold; color: lightskyblue">
+                            Formulaire de Registre
+                        </h1>
+
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-sm-offset-3 text">
+
+                    <div class="form-box">
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3>Inscrivez-vous dès maintenant</h3>
+                                <p>Remplissez le formulaire ci-dessous pour obtenir un accès instantané :</p>
+                            </div>
+                            <div class="form-top-right">
+                                <i class="fa fa-pencil"></i>
+                            </div>
+                        </div>
+                        <div class="form-bottom">
+                            <form role="form" method="post" class="registration-form">
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-first-name">Nom d’utilisateur</label>
+                                    <input type="text" name="name" placeholder="User name..." class="form-first-name form-control" id="form-first-name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-email">Email</label>
+                                    <input type="text" name="email" placeholder="Email..." class="form-email form-control" id="form-email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-email">Mot de passe</label>
+                                    <input type="password" name="pass1" placeholder="Password..." class="form-email form-control" id="form-email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-email">Confirmez mot de passe</label>
+                                    <input type="password" name="pass2" placeholder="Confirm Password..." class="form-email form-control" id="form-email">
+                                </div>
+                                <input type="submit" value="Je veux m’inscrire">
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <div class="social-login">
+                        <h3>Déjà un membre ? </h3>
+                        <div class="social-login-buttons">
+                            <a href="fr/login" style="text-align:center; padding: 10px 20px; font-size: 16px; border-radius: 4px; border:2px solid lightskyblue">
+                                Allez a connexion
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

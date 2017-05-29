@@ -1,0 +1,58 @@
+{# empty Twig template #}
+{% extends "fr/master.html.twig" %}
+
+{% block title %} Liste des fichiers {% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div id="psdgraphics-com-table">
+
+            <div id="psdg-header">
+                <a href="/fr/upload" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
+                    Télécharger
+                </a>
+                <a href="/fr/admin/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
+                    Liste des utilisateurs
+                </a>
+            </div>
+
+            <div id="psdg-top">
+                <div class="psdg-top-cell" style="width:7%">Id du fichier</div>
+                <div class="psdg-top-cell" style="width:7%">Id d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:20%">Nom de fichier</div>
+                <div class="psdg-top-cell" style="width:20%">Date de Modification</div>
+                <div class="psdg-top-cell" style="width:10%">Taille(KB)</div>
+                <div class="psdg-top-cell" style="width:35%">Operations</div>
+            </div>
+
+            <div id="psdg-middle">
+
+                {% for f in fileList %}
+
+                    <div class="psdg-left" style="width:7%">{{f.id}}</div>
+                    <div class="psdg-right" style="width:7%">{{f.userId}}</div>
+                    <div class="psdg-right" style="width:20%">{{f.filename}}</div>
+                    <div class="psdg-right" style="width:20%">{{f.modifiedDate}}</div>
+                    <div class="psdg-right" style="width:10%">{{f.size}}</div>
+                    <div class="psdg-right" style="width:35%">
+                        <a href="/fr/rename/{{f.id}}" class="psdg-button1" style="float:left">Changement de nom</a>
+                        <a href="/fr/delete/{{f.id}}" class="psdg-button1" style="float:left">Supprimer</a>
+                        <a href="/fr/download/{{f.id}}" class="psdg-button1" style="float:left">Télécharger</a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+            <div id="psdg-bottom">
+                <div class="psdg-top-cell" style="width:7%">Id du fichier</div>
+                <div class="psdg-top-cell" style="width:7%">Id d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:20%">Nom de fichier</div>
+                <div class="psdg-top-cell" style="width:20%">Date de Modification</div>
+                <div class="psdg-top-cell" style="width:10%">Taille(KB)</div>
+                <div class="psdg-top-cell" style="width:35%">Operations</div>
+            </div>
+        </div>
+    </div><!--close content-->   
+
+
+{% endblock %}

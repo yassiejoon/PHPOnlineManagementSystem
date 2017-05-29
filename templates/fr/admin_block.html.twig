@@ -1,0 +1,18 @@
+{# empty Twig template #}
+
+{% extends "fr/admin_master.html.twig" %}
+
+{% block title %} Bloc de l’utilisateur {% endblock %}
+
+{% block title_extra %} Bloc de l’utilisateur {% endblock %}
+
+{% block content %}
+   
+    <form method="post">
+        Changer de bloc ? <input type="checkbox" name="isActive" value="checked"
+                    {% if u.isActive == 'no' %}checked{% endif %}
+                    ><br><br>
+        <input type="submit" value="Modifiez">
+    </form>    
+    
+{% endblock %}

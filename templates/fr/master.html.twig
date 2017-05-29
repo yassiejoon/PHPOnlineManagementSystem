@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+    <head>
+        <title>{% block title %} {% endblock %}</title>
+        <meta name="description" content="free website template" />
+        <meta name="keywords" content="enter your keywords here" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="stylesheet" type="text/css" href="../../homepage/css/style.css" />
+        <link href="../../style.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="../../homepage/js/jquery.min.js"></script>
+        <script type="text/javascript" src="../../homepage/js/image_slide.js"></script>
+        {% block head %}
+        {% endblock %}
+
+        <style>
+            html, body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            /* define a fixed width for the entire menu */
+            .navigation {
+                width: 140px;
+            }
+
+            /* reset our lists to remove bullet points and padding */
+            .mainmenu, .submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* make ALL links (main and submenu) have padding and background color */
+            .mainmenu a {
+                display: block;
+                background-color:#0043a8;
+                text-decoration: none;
+                padding: 10px;
+                color: white;
+            }
+
+            /* add hover behaviour */
+            .mainmenu a:hover {
+                background-color: lightskyblue;
+            }
+
+
+            /* when hovering over a .mainmenu item,
+              display the submenu inside it.
+              we're changing the submenu's max-height from 0 to 200px;
+            */
+
+            .mainmenu li:hover .submenu {
+                display: block;
+                max-height: 300px;
+            }
+
+            /*
+              we now overwrite the background-color for .submenu links only.
+              CSS reads down the page, so code at the bottom will overwrite the code at the top.
+            */
+
+            .submenu a {
+                background-color: silver;
+                color: black;
+            }
+
+            /* hover behaviour for links inside .submenu */
+            .submenu a:hover {
+                background-color: #666;
+            }
+
+            /* this is the initial state of all submenus.
+              we set it to max-height: 0, and hide the overflowed content.
+            */
+            .submenu {
+                overflow: hidden;
+                max-height: 0;
+                -webkit-transition: all 0.5s ease-out;
+            }       </style>
+    </head>
+
+    <body>
+        <div id="main">
+            <div id="menubar">
+                <ul id="menu">
+                    <li class="current"><a href="/en/list">Home</a></li>
+                    <li><a href="/en/logout" onclick="return confirm('You have to logout first.')" class="confirmation">Register</a></li>
+                    <li><a href="/en/logout" onclick="return confirm('You have to logout first.')" class="confirmation">Login</a></li>
+                    <li><a href="/en/logout">Logout</a></li>
+                    <li><a href="/en/list" style="float: right">EN</a></li>
+                </ul>
+                <img id="Logo" title="Logo" style="align-content: right" src="../../homepage/images/logo.png" alt="" />
+            </div><!--close menubar-->	
+            <div id="status-area"></div>
+            <div id="site_content">		
+
+                <div class="sidebar_container">       
+                    <div class="sidebar">
+                        <div class="sidebar_item">
+                            <h2 style="margin: 0 0 10px 0; font-size: 16px">Welcome, {{u.name}}</h2>
+                            <!--                            <img style="display: block" src="../homepage/images/homepage.png" alt="homepage">-->
+                            <nav class="navigation">
+                                <ul class="mainmenu">
+                                    <li><a href="">MY WORKSPACE</a>
+                                        <ul class="submenu">
+                                            <li><a href="">Activity Stream</a></li>
+                                            <li><a href="">Tasks</a></li>
+                                            <li><a href="">Calendar</a></li>
+                                            <li><a href="">Files</a></li>
+                                            <li><a href="">Photos</a></li>
+                                            <li><a href="">Conversation</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="">WORKGROUPS</a></li>
+                                    <li><a href="">CRM</a></li>
+                                    <li><a href="">COMPANY</a></li>
+                                    <li><a href="">SETTINGS</a></li>
+                                </ul>
+                            </nav>
+                        </div><!--close sidebar_item--> 
+                    </div><!--close sidebar-->     		
+                </div><!--close sidebar_container-->	
+
+                {% block content %}
+                {% endblock %}
+            </div><!--close site_content--> 
+        </div><!--close main-->
+
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <h2 class="copyright" style="text-align: center">John Abbott College © 2017</h2>
+            </div>
+        </footer>
+    </body>
+</html>
+

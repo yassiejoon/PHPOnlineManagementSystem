@@ -1,0 +1,28 @@
+{# empty Twig template #}
+{% extends "fr/master.html.twig" %}
+
+{% block title %} Opération interdite{% endblock %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="5;url=/fr/list" />
+    
+    <script>
+        $(document).ready(function () {
+            window.setTimeout(function () {
+                location.href = "/fr/list";
+            }, 5000);
+        });
+    </script> 
+{% endblock %}
+
+{% block content %}
+    <div id="bground" class="">
+        <div id="bground-header">
+            <a style="font-size: 28px; color: red; font-weight: bold">Opération interdite</a><br>
+            <a href="/fr/list" style="color: red; font-size: 16px; text-decoration: underline">
+                Cliquez pour la liste
+            </a>
+            <a style="color: red; font-size: 16px">ou vous allez être redirigé dans 5 secondes.</a>
+        </div>
+    </div>
+{% endblock %}

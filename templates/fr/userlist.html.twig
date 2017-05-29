@@ -1,0 +1,59 @@
+{# empty Twig template #}
+
+{% extends "fr/master.html.twig" %}
+
+{% block title %} Liste des utilisateurs {% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div id="psdgraphics-com-table">
+            <div id="psdg-header">
+                <a href="/fr/register" class="psdg-button" style="float:left; margin-left: 20px; margin-top: 10px">
+                    Ajouter un Utilisateur
+                </a>
+                <a href="/fr/list" class="psdg-button" style="float:right; margin-right: 20px; margin-top: 10px">
+                    Liste des fichiers
+                </a>
+            </div>
+
+            <div id="psdg-top">
+                <div class="psdg-top-cell" style="width:7%">Id d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:16%">Nom d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:16%">Email</div>
+                <div class="psdg-top-cell" style="width:16%">Mot de Passe</div>
+                <div class="psdg-top-cell" style="width:7%">Admin</div>
+                <div class="psdg-top-cell" style="width:7%">Actif</div>
+                <div class="psdg-top-cell" style="width:30%">Operations</div>
+            </div>
+
+            <div id="psdg-middle">
+
+                {% for u in userList %}
+
+                    <div class="psdg-left" style="width:7%">{{u.id}}</div>
+                    <div class="psdg-right" style="width:16%">{{u.name}}</div>
+                    <div class="psdg-right" style="width:16%">{{u.email}}</div>
+                    <div class="psdg-right" style="width:16%">{{u.password}}</div>
+                    <div class="psdg-right" style="width:7%">{{u.isAdmin}}</div>
+                    <div class="psdg-right" style="width:7%">{{u.isActive}}</div>
+                    <div class="psdg-right" style="width:30%">
+                        <a href="/fr/admin/edit/{{u.id}}" class="psdg-button2" style="float:left">edit</a>
+                        <a href="/fr/admin/delete/{{u.id}}" class="psdg-button2" style="float:left">delete</a>
+                        <a href="/fr/admin/block/{{u.id}}" class="psdg-button2" style="float:left">block</a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+            <div id="psdg-bottom">
+                <div class="psdg-top-cell" style="width:7%">Id d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:16%">Nom d'utilisateur</div>
+                <div class="psdg-top-cell" style="width:16%">Email</div>
+                <div class="psdg-top-cell" style="width:16%">Mot de Passe</div>
+                <div class="psdg-top-cell" style="width:7%">Admin</div>
+                <div class="psdg-top-cell" style="width:7%">Actif</div>
+                <div class="psdg-top-cell" style="width:30%">Operations</div>
+            </div>
+        </div>
+    </div><!--close content-->   
+{% endblock %}
